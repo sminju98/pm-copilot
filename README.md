@@ -85,7 +85,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `/pm-copilot:weekly` | 주간 회고 |
 | `/pm-copilot:learn` | 오늘의 배움(AI·기획 코칭) |
 
-**23개 스킬 전부 이름 그대로 명령이 됩니다** — `/pm-copilot:ramp-up`, `/pm-copilot:prioritize`, `/pm-copilot:metrics-report`, `/pm-copilot:doc-polish` …
+**37개 스킬 전부 이름 그대로 명령이 됩니다** — `/pm-copilot:ramp-up`, `/pm-copilot:prioritize`, `/pm-copilot:qa`, `/pm-copilot:voc`, `/pm-copilot:routine` …
 
 > ⚠️ 슬래시 명령은 **새 세션에서 로드**됩니다(설치·업데이트 후 재시작). 슬래시를 몰라도 **자연어로 그냥 말하면** 다 동작해요 — "우선순위 매겨줘", "회의록 정리해줘".
 
@@ -96,7 +96,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 - **자동 루틴**: 예약 걸면 매일 아침 슬랙으로 브리핑(사람 확인 없이 전송은 예약 실행에서만).
 - 개인정보 원문은 노출 안 함(개수/일반 안내만). 시끄러우면 `proactive.enabled=false`로 끕니다.
 
-## 구성 (스킬 34종)
+## 구성 (스킬 37종)
 
 **매일/주기 — 브리핑 엔진**
 
@@ -109,6 +109,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `market-radar` | ② 경쟁사·업계·테크뉴스 리서치(출처 포함) + 메일 분석 |
 | `team-standup` | ③ 팀원별 한일/할일 — 🔒 **나만 보기 전용** |
 | `metrics-watch` | 지표 이상탐지 — 급등·급락 때만 알림 |
+| `routine` | 브리핑·회고·지표·VOC를 매일/매주 **클라우드 루틴**으로 자동 실행(무인) |
 
 **온디맨드 — 만들기·결정 도구**
 
@@ -140,7 +141,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 
 | 스킬 | 하는 일 |
 |---|---|
-| `method` | 고수 기획자 사고 흐름(점검·리서치→기획→시각화→실행) — 모든 작업의 기본 |
+| `method` | 고수 기획자 사고 흐름(왜→무엇→어떻게→리서치→기획→시각화→실행→🔁회고) — 모든 작업의 기본 |
 | `project` | 로컬 태스크·마일스톤 트래커(Jira 없이도) — 마감·의존·블로커·지연 경보 |
 | `gantt` | 살아있는 간트/WBS — 현황·팀원 한 일로 계속 갱신 |
 | `sprint-plan` | 스프린트 계획(스코프·용량·목표·P0) |
@@ -151,13 +152,15 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `mockup` | 저충실도 목업/와이어프레임(HTML) |
 | `prototype` | 인터랙티브 프로토타입(바이브코딩) |
 | `simple-design` | 배너·소셜카드·간단 UI(클로드 디자인 활용) |
+| `qa` | 배포 전 검수(문서+실제 화면) → QA 시트 → 수정 인사이트·기획 |
+| `voc` | 고객 VOC 분석→인사이트→기획 + 미응답엔 추천 답변 초안 |
 
 ```
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 34개 스킬 (자연어로 트리거)
-├─ commands/                    슬래시 명령 8개 (/pm-copilot:...)
+├─ skills/                      위 37개 스킬 (자연어로 트리거)
+├─ commands/                    슬래시 명령 44개 (/pm-copilot:...)
 ├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)
 ├─ templates/                   context/brief 템플릿

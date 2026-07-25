@@ -10,7 +10,8 @@ description: pm-copilot 사용법 — 무슨 명령/무슨 말로 부르는지 �
 - `/pm-copilot:setup` 첫 설정 · `/pm-copilot:brief` 오늘 브리핑 · `/pm-copilot:worklog` 업무일지🔒
 - `/pm-copilot:review <내용>` 검사받기 · `/pm-copilot:spec <아이디어>` 기획서 · `/pm-copilot:weekly` 주간회고
 - `/pm-copilot:standup` 팀현황🔒 · `/pm-copilot:learn` 오늘의 배움
-- **모든 스킬은 이름 그대로도 됨**: `/pm-copilot:ramp-up`, `/pm-copilot:prioritize`, `/pm-copilot:metrics-report`, `/pm-copilot:doc-polish` …
+- `/pm-copilot:qa` 배포 전 검수 · `/pm-copilot:voc` 고객의 소리 · `/pm-copilot:routine` 매일 자동 예약
+- **모든 스킬은 이름 그대로도 됨**: `/pm-copilot:ramp-up`, `/pm-copilot:prioritize`, `/pm-copilot:project`, `/pm-copilot:gantt`, `/pm-copilot:roadmap`, `/pm-copilot:screen-spec`, `/pm-copilot:mockup`, `/pm-copilot:prototype` …
 
 **② 자연어로도 됩니다 (슬래시 몰라도)**
 - "오늘 브리핑 돌려줘" / "오늘 할 일 정리해줘" / "이 기획서 검사해줘"
@@ -23,6 +24,6 @@ description: pm-copilot 사용법 — 무슨 명령/무슨 말로 부르는지 �
 - 처음 깔았으면: 먼저 "설정 도와드릴까요?"
 - 매일 자동(루틴): 예약 걸면 아침마다 브리핑을 슬랙으로 (끄기: `proactive.enabled=false`)
 
-**④ 전체 기능(23종)** — "무슨 기능 있어?"라고 물으면 카테고리별로 보여드림.
+**④ 전체 기능(37종)** — "무슨 기능 있어?"라고 물으면 카테고리별로 보여드림.
 
 설정이 안 돼 있으면 → `/pm-copilot:setup` 또는 "기획 사수 설정 시작하자".

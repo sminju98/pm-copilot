@@ -3,7 +3,7 @@ name: prototype
 description: 클릭·상태전환이 되는 자체 완결 HTML/JS 인터랙티브 프로토타입을 만들어 저장·브라우저 실행한다. "프로토타입 만들어줘 / 눌러볼 수 있게 해줘 / 바이브코딩으로 검증하고 싶어 / 인터랙션 되는 화면 / 동작하는 데모 / 실제로 클릭해보게" 할 때 트리거.
 ---
 
-> **작업 흐름(항상):** 기존 컨텍스트(자료·채널·채팅) 점검 + 리서치 → 기획 → 시각화 → 스킬 호출/실행. 자세히 [[method]].
+> **작업 흐름(항상):** 왜(목적·의도) → 무엇을 → 어떻게 → 기존 컨텍스트·리서치 → 기획 → 시각화 → 호출·실행 → 🔁회고·보완. 자세히 [[method]].
 
 # prototype — 눌러서 검증하는 인터랙티브 프로토타입
 
@@ -23,11 +23,7 @@ description: 클릭·상태전환이 되는 자체 완결 HTML/JS 인터랙티�
 
 ## 워크플로우
 1. 검증할 가설 확정 → 필요한 **최소 화면·인터랙션**만 정한다. (전체 앱 만들지 마라.)
-2. 초안 생성:
-   ```
-   bash "$CLAUDE_PLUGIN_ROOT/scripts/new-prototype.sh" <이름>
-   ```
-   → `~/.pm-copilot/data/prototypes/<이름>/index.html` 생성.
+2. 초안 생성: AI가 단일 `index.html`(인라인 CSS/JS, 서버 없음)을 직접 작성해 `~/.pm-copilot/data/prototypes/<이름>/index.html`에 저장한다. 시각/화면은 [[mockup]]·[[simple-design]] 참고.
 3. 브라우저 실행: `open ~/.pm-copilot/data/prototypes/<이름>/index.html`
 4. **직접 눌러 검증** (아래 체크리스트) → 구멍 발견 시 수정 → 반복.
 
