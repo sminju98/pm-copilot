@@ -44,6 +44,9 @@
     "schedule": "0 9 * * 1-5",
     "language": "ko"
   },
+  "proactive": {
+    "enabled": true
+  },
   "context_file": "data/context.md",
   "setup": {
     "completed": false

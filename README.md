@@ -1,5 +1,11 @@
 # 기획 사수 · PM Copilot (Claude Code 플러그인)
 
+> **📮 친구에게 보내기** — 아래 한 줄만 복붙해서 보내면, 상대 Claude Code가 알아서 깔고 설정까지 안내합니다:
+>
+> `이 플러그인 깔고 설정까지 도와줘: https://github.com/sminju98/pm-copilot`
+>
+> (터미널파: `claude plugin marketplace add sminju98/pm-copilot && claude plugin install pm-copilot`)
+
 기획자(PM)를 위한 **데일리 브리핑 자동화 + 사수 검토**. 매일 아침, 놓치기 쉬운 것을 사수처럼 정리해 슬랙/노션으로 보내준다.
 
 ```
@@ -62,7 +68,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 > **"내일 회의 준비해줘 / 회의록 정리해줘"** → 안건 브리핑 · 액션아이템 정리
 > **"/schedule 평일 오전 9시에 기획 사수 데일리 브리핑 실행"** → 매일 자동
 
-## 구성 (스킬 17종)
+## 구성 (스킬 18종)
 
 **매일/주기 — 브리핑 엔진**
 
@@ -95,12 +101,14 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 |---|---|
 | `private-backlog` | PM 전용 비공개 백로그(아이디어·리스크·관찰) |
 | `decision-log` | 의사결정 로그 + 블라인드스팟 학습·코칭 |
+| `worklog` | 개인 업무일지(오늘 할일/한일·주간·월간) 자동작성 + 마감 검토·코칭 |
 
 ```
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 17개 스킬
+├─ skills/                      위 18개 스킬
+├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)
 ├─ templates/                   context/brief 템플릿
 └─ data/                        컨텍스트 문서·생성된 브리핑 (git 제외)
@@ -112,6 +120,7 @@ pm-copilot/
 - 브리핑의 재료는 두 가지: **① 내가 적어둔 컨텍스트 문서**(`data/context.md`)와 **② 연결한 커넥터/웹**.
 - **근거 없는 수치는 지어내지 않는다.** 확인 안 되면 "확인 필요"로 표시한다.
 - **왜 그렇게 판단했는지 이유를 항상 설명**하고, 놓친 사고 습관을 짚어 **PM의 성장(코칭)**까지 돕는다.
+- **먼저 챙김(프로액티브).** 세션을 열면 오늘 할 일·미결·묵힌 항목을 먼저 짚어준다. 시끄러우면 `proactive.enabled=false`로 끈다.
 
 ## 설치 & 설정 (한 번만)
 
