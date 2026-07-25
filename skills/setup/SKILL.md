@@ -18,6 +18,12 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" me.name="홍길동"      # �
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/schedule_brief.py"                  # 예약 등록 문구 보기
 ```
 웹훅·토큰 같은 민감값도 `set_config.py`로 저장하면 화면에는 가려져 표시된다.
+설정과 데이터는 **`~/.pm-copilot/`** 에 저장되어 플러그인을 업데이트/재설치해도 유지된다.
+
+> **⚡ 빠른 길:** 사용자가 슬랙 웹훅을 이미 가지고 있으면 아래 한 줄로 config 생성·검증·테스트 발송까지 끝난다. 이후 컨텍스트만 채우면 된다.
+> ```bash
+> python3 "$CLAUDE_PLUGIN_ROOT/scripts/quicksetup.py" --private "<나만보기 웹훅>" [--team "<팀 웹훅>"] --name "이름" --product "제품명"
+> ```
 
 ## 진행 순서
 
@@ -83,7 +89,7 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" sources.use_web=true sources
 프로덕트 현황·경쟁사·로드맵·팀원 명단을 적어두는 문서를 만든다. **네가 대신 만들고 채운다.**
 1. 템플릿을 복사:
    ```bash
-   cp "$CLAUDE_PLUGIN_ROOT/templates/context.example.md" "$CLAUDE_PLUGIN_ROOT/data/context.md"
+   mkdir -p ~/.pm-copilot/data && cp "$CLAUDE_PLUGIN_ROOT/templates/context.example.md" ~/.pm-copilot/data/context.md
    ```
 2. 사용자에게 대화로 물어(현재 집중 과제, 최근 지표, 경쟁사 2~3곳, 이번 분기 목표, 팀원 이름/역할/그 사람들 업데이트가 어디 쌓이는지) **네가 `data/context.md`를 직접 편집**해 채운다.
 3. 한 번에 다 못 채워도 된다. "일단 아는 것만" 채우고 넘어간다. 나중에 "컨텍스트 업데이트하자"로 이어서.

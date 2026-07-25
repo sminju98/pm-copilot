@@ -10,14 +10,29 @@
           →  팀 공유본은 팀 채널로, 개인본은 나만 보는 곳으로
 ```
 
-## 설치
+## 설치 (플러그인 까는 법)
 
-Claude Code에서:
+`/plugin`은 Claude Code **세션 안에서만** 되는 명령이라, 보통은 **일반 터미널에서 CLI로** 깝니다:
 ```
-/plugin marketplace add sminju98/pm-copilot
-/plugin install pm-copilot
+claude plugin marketplace add sminju98/pm-copilot
+claude plugin install pm-copilot
 ```
-설치 후 클로드에게 **"기획 사수 설정 시작하자"** 라고 하면 대화로 설정을 도와줍니다.
+- 확인 `claude plugin list` · 업데이트 `claude plugin update pm-copilot` · 제거 `claude plugin uninstall pm-copilot`
+- 설치 후 **새 세션**을 열면 스킬이 로드됩니다.
+- (Claude Code 세션 안이라면 `/plugin marketplace add sminju98/pm-copilot` → `/plugin install pm-copilot` 도 동일)
+- 첫 설치 때 "Anthropic이 관리하지 않는 플러그인" 신뢰 경고가 뜹니다 — 신뢰하면 확인.
+
+## 셋업 (둘 중 하나)
+
+**A. 빠른 셋업 (웹훅만 있으면 1줄)** — 슬랙 Incoming Webhook을 만든 뒤, 클로드에게 "이 웹훅으로 빠른 셋업 해줘" 하거나 직접:
+```
+python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹훅>" [--team "<팀 웹훅>"] --name "이름" --product "제품명"
+```
+→ config 생성 + 웹훅 검증 + 테스트 발송까지 한 번에.
+
+**B. 대화형 셋업** — 클로드에게 **"기획 사수 설정 시작하자"** → 하나씩 물어보며 안내.
+
+> 설정·데이터는 **`~/.pm-copilot/`** 에 저장되어 **플러그인을 업데이트/재설치해도 유지**됩니다(민감정보라 저장소엔 안 올라감). 다른 위치를 쓰려면 `PM_COPILOT_HOME` 환경변수로 지정.
 
 ## 🟢 제일 쉬운 사용법 (설정도 클로드가 해줌)
 

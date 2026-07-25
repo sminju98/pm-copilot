@@ -15,9 +15,9 @@ import shutil
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CONFIG_PATH, ROOT
+from common import CONFIG_PATH, EXAMPLE_CONFIG, HOME
 
-EXAMPLE = os.path.join(ROOT, "config.example.json")
+EXAMPLE = EXAMPLE_CONFIG
 
 
 def parse_value(s):
@@ -48,8 +48,9 @@ def _redact(path, value):
 
 def main():
     if not os.path.exists(CONFIG_PATH):
+        os.makedirs(HOME, exist_ok=True)
         shutil.copy(EXAMPLE, CONFIG_PATH)
-        print("[config.json 생성됨] (config.example.json 복제)")
+        print(f"[config.json 생성됨] {CONFIG_PATH}")
 
     with open(CONFIG_PATH, encoding="utf-8") as f:
         cfg = json.load(f)

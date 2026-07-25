@@ -9,10 +9,14 @@ import ssl
 import urllib.error
 import urllib.request
 
+# ROOT = 설치된 패키지 폴더(스킬·스크립트·템플릿). 플러그인 업데이트 시 갈아끼워지므로 '읽기 전용' 취급.
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(ROOT, "data")
+# HOME = 사용자 설정·데이터를 두는 '안정적' 폴더. 플러그인을 업데이트/재설치해도 여기 값은 유지된다.
+HOME = os.environ.get("PM_COPILOT_HOME", "").strip() or os.path.expanduser("~/.pm-copilot")
+DATA_DIR = os.path.join(HOME, "data")
 BRIEFS_DIR = os.path.join(DATA_DIR, "briefs")
-CONFIG_PATH = os.path.join(ROOT, "config.json")
+CONFIG_PATH = os.path.join(HOME, "config.json")
+EXAMPLE_CONFIG = os.path.join(ROOT, "config.example.json")
 
 
 def load_config(path=CONFIG_PATH, soft=False):
@@ -32,7 +36,7 @@ def load_config(path=CONFIG_PATH, soft=False):
 def context_path(cfg=None):
     cfg = cfg or {}
     rel = cfg.get("context_file", "data/context.md")
-    return rel if os.path.isabs(rel) else os.path.join(ROOT, rel)
+    return rel if os.path.isabs(rel) else os.path.join(HOME, rel)
 
 
 def load_context(cfg=None):
