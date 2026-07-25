@@ -1,0 +1,51 @@
+{
+  "me": {
+    "name": "홍길동",
+    "role": "프로덕트 기획자",
+    "timezone": "Asia/Seoul"
+  },
+  "product": {
+    "name": "우리 서비스",
+    "one_liner": "무엇을, 누구에게, 왜 좋은지 한 줄 소개",
+    "stage": "MVP",
+    "north_star": "핵심 성공지표(예: 주간 활성 사용자)"
+  },
+  "sources": {
+    "use_web": true,
+    "use_email": false,
+    "use_notion": false,
+    "use_jira": false,
+    "use_confluence": false,
+    "use_task_tracker": false,
+    "use_metrics": false
+  },
+  "delivery": {
+    "team": {
+      "enabled": false,
+      "slack_webhook": "",
+      "notion_page_id": ""
+    },
+    "private": {
+      "enabled": true,
+      "slack_webhook": "",
+      "notion_page_id": ""
+    }
+  },
+  "notion": {
+    "token": ""
+  },
+  "brief": {
+    "sections": {
+      "product_review": true,
+      "market_radar": true,
+      "team_standup": true,
+      "insights": true
+    },
+    "schedule": "0 9 * * 1-5",
+    "language": "ko"
+  },
+  "context_file": "data/context.md",
+  "setup": {
+    "completed": false
+  }
+}

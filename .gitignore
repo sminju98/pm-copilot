@@ -1,0 +1,9 @@
+# 민감정보 · 개인/회사 데이터는 커밋하지 않음
+config.json
+data/*
+!data/.gitkeep
+
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
