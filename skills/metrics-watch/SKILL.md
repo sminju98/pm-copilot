@@ -27,6 +27,7 @@ description: 핵심 지표를 살펴 급등·급락·이상 신호가 있을 때
 ## 4. 전송
 이상 시에만 **개인본(private)** 알림:
 ```bash
+# 연결된 Slack 커넥터로 delivery.private.slack_channel 에 게시(우선). 폴백:
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py" --to private --title "⚠️ 지표 알림" --file <초안> --dry-run
 ```
 

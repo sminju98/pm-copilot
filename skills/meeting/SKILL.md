@@ -47,6 +47,7 @@ cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null
 5. (선택) 요약을 슬랙에 공유:
    ```bash
    # 팀 공유(민감 내용 없을 때). 개인 보관은 --to private
+   # 연결된 Slack 커넥터로 설정 채널에 게시(우선). 폴백:
    python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py" --to team --title "회의 정리: <제목>" --file <초안> --dry-run
    ```
    전송 전 항상 `--dry-run`으로 확인하고, 사용자 승인 후 실제 전송한다.

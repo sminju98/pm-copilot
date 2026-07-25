@@ -87,7 +87,9 @@ def main():
     if args.to == "team" and looks_private(body):
         raise SystemExit("⛔ 거부: 본문이 '나만 보기(팀원 현황 등)' 콘텐츠로 보입니다. 팀 채널로 보낼 수 없습니다. --to private 로만 보내세요.")
 
-    text = (f"*{args.title}*\n" if args.title else "") + to_mrkdwn(body)
+    # 모든 메시지에 [claude ai] 말머리 — 사람이 쓴 것과 헷갈리지 않게
+    header = f"*[claude ai]{(' ' + args.title) if args.title else ''}*\n"
+    text = header + to_mrkdwn(body)
 
     if args.dry_run:
         who = "팀 채널" if args.to == "team" else "나만 보는 채널"

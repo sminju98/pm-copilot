@@ -22,13 +22,15 @@
   "delivery": {
     "team": {
       "enabled": false,
-      "slack_webhook": "",
-      "notion_page_id": ""
+      "slack_channel": "",
+      "notion_page_id": "",
+      "slack_webhook": ""
     },
     "private": {
       "enabled": true,
-      "slack_webhook": "",
-      "notion_page_id": ""
+      "slack_channel": "",
+      "notion_page_id": "",
+      "slack_webhook": ""
     }
   },
   "notion": {

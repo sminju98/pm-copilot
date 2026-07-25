@@ -6,6 +6,8 @@
 >
 > (터미널파: `claude plugin marketplace add sminju98/pm-copilot && claude plugin install pm-copilot`)
 
+> **💳 비용** — 플러그인은 **무료·오픈소스**입니다. 실행에 필요한 **Claude 구독**은 보통 **회사 업무 툴 비용으로 처리**하면 돼요(개인 결제 아님).
+
 기획자(PM)를 위한 **데일리 브리핑 자동화 + 사수 검토**. 매일 아침, 놓치기 쉬운 것을 사수처럼 정리해 슬랙/노션으로 보내준다.
 
 ```
@@ -23,7 +25,7 @@
    claude plugin marketplace add sminju98/pm-copilot
    claude plugin install pm-copilot
    ```
-2. **받을 곳 만들기** — `api.slack.com/apps`에서 Incoming Webhook **2개**(나만보기용 / 팀공유용). 회사 정책상 막히면 관리자에게 요청.
+2. **받을 곳 연결** — claude.ai 설정 → **커넥터에서 Slack 연결(클릭 한 번, OAuth)**. 팀 활동·컨텍스트를 읽으려면 Notion·Jira도. → 어느 채널로 보낼지만 정하면 됨. (웹훅은 폴백이고, **맥 꺼져도 도는 무인 자동은 커넥터 필수**)
 3. **셋업 한 줄** — 클로드에게: `이 웹훅으로 빠른 셋업 해줘: <나만보기URL> 팀은 <팀URL>` → config 생성·검증·테스트 발송까지 자동. (또는 **"기획 사수 설정 시작하자"**)
 4. **컨텍스트 한 번** — 우리 제품/경쟁사/팀을 말하면 클로드가 정리해 저장.
 5. **써보기** — `오늘 브리핑 돌려줘` · `이 기획서 검사해줘` · `내일 회의 준비해줘`

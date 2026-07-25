@@ -88,7 +88,8 @@ def main():
     if args.to == "team" and looks_private(md):
         raise SystemExit("⛔ 거부: 본문이 '나만 보기' 콘텐츠로 보입니다. team 노션으로 보낼 수 없습니다.")
 
-    body_md = (f"## {args.title}\n{md}" if args.title else md)
+    # 모든 게시물에 [claude ai] 말머리 — 사람이 쓴 것과 헷갈리지 않게
+    body_md = (f"## [claude ai] {args.title}\n{md}" if args.title else f"[claude ai]\n{md}")
     blocks = md_to_blocks(body_md)
 
     if args.dry_run:

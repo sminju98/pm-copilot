@@ -45,24 +45,21 @@ python3 -c "import sys; sys.path.insert(0,'$CLAUDE_PLUGIN_ROOT/scripts'); import
 - **대화형(사람이 직접 부름):** 먼저 **개인본 초안을 화면에 보여주고** "이대로 보낼까요? (팀 공유본은 ③ 빼고 나갑니다)" 확인을 받는다. 승인 후 전송. → *반자동: 사람이 검토·수정하고 주고받으며 함께 다듬는다.*
 - **예약 실행:** 승인할 사람이 없으므로 확인을 건너뛰고 바로 저장·전송한다. 설정/컨텍스트가 없으면(예약 환경 제약) 있는 것만으로 만들고, 전송 실패 시 이유를 마무리 보고에 남긴다.
 
-## 4. 저장 & 전송
-초안을 파일로 저장한 뒤 스크립트로 보낸다. (아래는 예시 — 실제로는 네가 만든 마크다운을 파일에 쓰고 실행)
+## 4. 저장 & 전송 (연결된 커넥터 우선)
+초안을 로컬에 저장(대화형일 때)한 뒤, **연결된 커넥터로 전송**한다.
 ```bash
-# 저장 (네가 생성한 마크다운을 각각 파일로 write 한 뒤)
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind private --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/_draft_private.md"
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind team    --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/_draft_team.md"
-
-# 개인본 전송 (민감 → 팀 채널 차단 플래그) — 슬랙 / 노션 중 설정된 것
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py"  --to private --sensitive \
-  --title "오늘의 기획 브리핑 (개인)" --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/last_brief_private.md"
-# python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_notion.py" --to private --sensitive --title "..." --file ...
-
-# 팀 공유본 전송 (delivery.team.enabled=true 일 때만)
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py"  --to team \
-  --title "오늘의 프로덕트 현황" --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/last_brief_team.md"
 ```
-- 전송 전 실제로 보낼지 애매하면 `--dry-run`을 붙여 결과를 먼저 확인한다.
-- 팀 채널이 꺼져 있으면(`enabled=false`) 팀 전송은 스크립트가 알아서 건너뛴다.
+**전달 규약(우선순위):**
+1. **Slack 커넥터가 연결돼 있으면** → 그 커넥터로 게시: 개인본 → `delivery.private.slack_channel`, 팀본 → `delivery.team.slack_channel`(enabled일 때).
+2. **Notion 커넥터가 있으면** → `delivery.<>.notion_page_id` 페이지에 append.
+3. **커넥터가 없을 때만** 폴백: `post_slack.py --to <private|team> [--sensitive] --file <저장경로>` / `post_notion.py`.
+4. **클라우드 예약(맥 꺼짐)**: 로컬 파일·웹훅이 없으니 **반드시 계정 커넥터 경로**로 게시하고, 컨텍스트·팀 데이터도 커넥터에서 읽는다.
+
+**말머리(반드시):** 커넥터로 게시하든 스크립트로 보내든, 모든 메시지(슬랙·노션) **맨 앞에 `[claude ai]`** 를 붙여 사람이 쓴 것과 헷갈리지 않게 한다.
+
+**🔒 프라이버시(반드시 지킴):** ③ 팀원 현황·개인 코멘트가 든 **개인본은 private 채널로만.** team 채널엔 ③ 및 "팀원 현황" 표현을 넣지 않는다. **커넥터 경로엔 스크립트 백스톱(--sensitive)이 없으니, 이 라우팅을 네가 직접 어기지 않는다.**
+- 대화형이면 전송 전 개인본 초안을 보여주고 확인. 팀 채널 꺼져 있으면(enabled=false) 팀 게시 생략.
 
 ## 5. 마무리 보고
 무엇을 어디로 보냈는지(또는 미리보기만 했는지), "확인 필요"로 남은 항목이 무엇인지, 다음에 무엇을 연결하면 더 좋아지는지를 사용자에게 한 문단으로 알린다.

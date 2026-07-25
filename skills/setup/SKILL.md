@@ -44,25 +44,21 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" \
 ```
 잘 모르면 "나중에 채워도 돼요" 하고 넘어간다.
 
-### 2단계. 어디로 받을지 (전달 채널) — 슬랙이 제일 쉬움
-슬랙 **Incoming Webhook**(주소 하나로 메시지가 자동으로 꽂히는 링크)을 만든다. 화면 순서대로 안내:
-1. 컴퓨터로 `api.slack.com/apps` 접속 → **Create New App → From scratch** → 앱 이름(예: 기획브리핑) + 워크스페이스 선택
-2. 왼쪽 메뉴 **Incoming Webhooks** → 토글을 **On**
-3. 아래 **Add New Webhook to Workspace** → **채널 선택** → 허용 → 나온 **https://hooks.slack.com/...** 주소를 복사해 채팅에 붙여넣게 한다
+### 2단계. 어디로 받고 무엇을 읽을지 — 커넥터 연결이 제일 쉬움
+슬랙 웹훅은 사용자가 직접 만들어야 해서 번거롭고 **내가 대신 못 눌러준다.** **claude.ai 커넥터**로 연결하면 **클릭 한 번**이니 이걸 먼저 권한다:
+1. `claude.ai → 설정 → 커넥터(Connectors)` 에서 **Slack** 연결(OAuth). 팀 활동·컨텍스트를 읽히려면 **Notion·Jira** 도 연결.
+2. **어느 채널로 보낼지**만 묻는다: 나만 보기용 채널/DM(필수) + 팀 공유용 채널(선택). (팀원 소스는 커넥터에서 **자동 탐색**하므로 매핑 안 시킨다.)
+3. 저장:
+   ```bash
+   python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" \
+     delivery.private.enabled=true delivery.private.slack_channel="#나만보는채널" \
+     delivery.team.enabled=false   delivery.team.slack_channel="#팀채널"
+   ```
+- 커넥터 연결(OAuth)은 **이 세션에서 대신 못 눌러준다** — 사용자가 claude.ai에서 직접.
+- **🔒 팀원 현황(③)은 나만 보기 채널로만** — 팀 채널로 절대 안 나감. 반드시 안내.
+- **매일 아침 자동(맥 꺼져도)** 을 원하면 커넥터가 필수다 — 클라우드 루틴은 로컬 config·웹훅을 못 보고 **GitHub 저장소 + 계정 커넥터**로만 돈다(5단계).
 
-**두 종류를 만든다(중요):**
-- **팀 공유용**: 팀 채널을 골라 만든 웹훅 → 현황을 팀과 공유(①②④)
-- **나만 보기용**: 본인만 있는 채널(또는 나에게 오는 DM 채널)을 골라 만든 웹훅 → 팀원 현황(③) 포함 전체
-
-받은 값을 저장:
-```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" \
-  delivery.team.enabled=true    delivery.team.slack_webhook="붙여넣은_팀URL" \
-  delivery.private.enabled=true delivery.private.slack_webhook="붙여넣은_개인URL"
-```
-- 팀 공유가 부담되면 `delivery.team.enabled=false`로 두고 **개인 채널만** 써도 된다(추천 시작 방식).
-- 여기서 반드시 안내: **"팀원별 한일/할일은 팀 채널로는 절대 안 나가고, 나만 보는 채널로만 갑니다."** (스크립트가 실수 전송을 막도록 되어 있음)
-- 노션에 쌓고 싶으면 `post_notion.py` 상단 안내대로 토큰/페이지ID를 받아 `delivery.*.notion_page_id`, `notion.token`에 저장(선택·고급).
+**(폴백) 커넥터를 못 쓰면** 슬랙 Incoming Webhook: `api.slack.com/apps → Create App → Incoming Webhooks On → Add to channel → URL 복사` → `set_config delivery.<team|private>.slack_webhook="URL"`.
 
 **⚠️ 슬랙 앱 생성이 막히면:** 회사 워크스페이스는 커스텀 앱 설치에 관리자 승인이 필요할 수 있다. 막히면 (a) 관리자에게 "Incoming Webhook 앱 승인"을 요청하도록 안내하고, (b) 그동안은 전송 없이 **채팅으로 브리핑 미리보기만** 받는 경로로 진행한다(설정 완료를 막지 않는다).
 
