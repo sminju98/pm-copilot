@@ -96,7 +96,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 - **자동 루틴**: 예약 걸면 매일 아침 슬랙으로 브리핑(사람 확인 없이 전송은 예약 실행에서만).
 - 개인정보 원문은 노출 안 함(개수/일반 안내만). 시끄러우면 `proactive.enabled=false`로 끕니다.
 
-## 구성 (스킬 23종)
+## 구성 (스킬 34종)
 
 **매일/주기 — 브리핑 엔진**
 
@@ -136,11 +136,27 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `decision-log` | 의사결정 로그 + 블라인드스팟 학습·코칭 |
 | `worklog` | 개인 업무일지(오늘 할일/한일·주간·월간) 자동작성 + 마감 검토·코칭 |
 
+**🗂️ 프로젝트·기획·제작 (신규)**
+
+| 스킬 | 하는 일 |
+|---|---|
+| `method` | 고수 기획자 사고 흐름(점검·리서치→기획→시각화→실행) — 모든 작업의 기본 |
+| `project` | 로컬 태스크·마일스톤 트래커(Jira 없이도) — 마감·의존·블로커·지연 경보 |
+| `gantt` | 살아있는 간트/WBS — 현황·팀원 한 일로 계속 갱신 |
+| `sprint-plan` | 스프린트 계획(스코프·용량·목표·P0) |
+| `roadmap` | Now/Next/Later·타임라인·의존 |
+| `research` | 일반 심층 리서치(뉴스·블로그·커뮤니티·뉴스레터, 출처) |
+| `screen-spec` | 화면 설계서(구성·상태·플로우·정책) |
+| `plan-doc` | 그 외 기획 문서(제안서·요구사항서·정책·보고서) |
+| `mockup` | 저충실도 목업/와이어프레임(HTML) |
+| `prototype` | 인터랙티브 프로토타입(바이브코딩) |
+| `simple-design` | 배너·소셜카드·간단 UI(클로드 디자인 활용) |
+
 ```
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 23개 스킬 (자연어로 트리거)
+├─ skills/                      위 34개 스킬 (자연어로 트리거)
 ├─ commands/                    슬래시 명령 8개 (/pm-copilot:...)
 ├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)
