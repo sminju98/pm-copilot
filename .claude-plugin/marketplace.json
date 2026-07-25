@@ -1,0 +1,15 @@
+{
+  "name": "pm-copilot",
+  "owner": {
+    "name": "songminju",
+    "email": "sminju98@gmail.com"
+  },
+  "description": "기획 사수(PM Copilot) — 기획자 업무 자동화 플러그인",
+  "plugins": [
+    {
+      "name": "pm-copilot",
+      "source": "./",
+      "description": "기획자(PM) 업무를 반자동으로 보조 — 데일리 브리핑·시장 리서치·팀원 현황(나만 보기)·사수 검토·회의·PRD·우선순위·프로젝트관리·의사결정(스킬 17종)"
+    }
+  ]
+}
