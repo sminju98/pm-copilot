@@ -37,6 +37,9 @@ def context_path(cfg=None):
 
 def load_context(cfg=None):
     """사용자가 관리하는 프로덕트/팀/로드맵 컨텍스트 문서를 읽는다. 없으면 빈 문자열."""
+    env = os.environ.get("PM_COPILOT_CONTEXT", "").strip()
+    if env:
+        return env
     p = context_path(cfg)
     if not os.path.exists(p):
         return ""
@@ -94,6 +97,14 @@ def looks_private(text):
 def is_scheduled():
     """예약(무인) 실행이면 True. 루틴 환경이 PM_COPILOT_SCHEDULED=1 을 넣어준다."""
     return os.environ.get("PM_COPILOT_SCHEDULED", "").strip().lower() in ("1", "true", "yes", "on")
+
+
+ENV_WEBHOOK = {"team": "PM_COPILOT_SLACK_TEAM", "private": "PM_COPILOT_SLACK_PRIVATE"}
+
+
+def env_webhook(to):
+    """예약/클라우드 실행용 — 환경변수에 담긴 슬랙 웹훅을 반환(없으면 ''). 로컬 config 없이 동작."""
+    return os.environ.get(ENV_WEBHOOK.get(to, ""), "").strip()
 
 
 def now_iso():

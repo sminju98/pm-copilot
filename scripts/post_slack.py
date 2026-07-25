@@ -20,7 +20,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import ROOT, http_request, load_config, looks_private
+from common import ROOT, http_request, load_config, looks_private, env_webhook, ENV_WEBHOOK
 
 
 def to_mrkdwn(md):
@@ -66,14 +66,17 @@ def main():
     if args.sensitive and args.to == "team":
         raise SystemExit("⛔ 거부: --sensitive 콘텐츠는 팀(team) 채널로 보낼 수 없습니다. --to private 로만 보내세요.")
 
-    cfg = load_config()
-    dest = cfg.get("delivery", {}).get(args.to, {})
-    if not dest.get("enabled", False):
-        print(f"[건너뜀] delivery.{args.to}.enabled=false — 이 채널은 꺼져 있습니다.")
-        return
-    webhook = dest.get("slack_webhook", "")
+    # 예약/클라우드 실행: 환경변수 웹훅을 우선 사용(로컬 config.json 없이도 동작)
+    webhook = env_webhook(args.to)
+    if not webhook:
+        cfg = load_config(soft=True)
+        dest = cfg.get("delivery", {}).get(args.to, {})
+        if not dest.get("enabled", False):
+            print(f"[건너뜀] delivery.{args.to} 비활성 & 환경변수({ENV_WEBHOOK[args.to]}) 없음 — 이 채널로 안 보냄.")
+            return
+        webhook = dest.get("slack_webhook", "")
     if not webhook or not webhook.startswith("https://hooks.slack.com/"):
-        raise SystemExit(f"[미설정] delivery.{args.to}.slack_webhook 가 없습니다. 설정에서 슬랙 웹훅 URL을 넣어주세요.")
+        raise SystemExit(f"[미설정] {args.to} 슬랙 웹훅이 없습니다. config 또는 환경변수 {ENV_WEBHOOK[args.to]} 로 넣어주세요.")
 
     body = _read_body(args)
 
