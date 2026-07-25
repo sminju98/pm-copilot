@@ -42,7 +42,8 @@
       "insights": true
     },
     "schedule": "0 9 * * 1-5",
-    "language": "ko"
+    "language": "ko",
+    "routine_enabled": false
   },
   "proactive": {
     "enabled": true

@@ -55,6 +55,8 @@ def main():
     print("  · 웹 리서치가 필요하면 루틴의 네트워크 접근을 켜세요.")
     print("  · 전달은 슬랙 Incoming Webhook 이 OAuth 만료 걱정 없이 가장 안정적입니다.")
     print("  · 첫 예약 후에는 실제 슬랙 도착을 반드시 눈으로 확인하세요.")
+    print("\n등록을 마쳤으면 클로드에게 '예약 완료'라고 하거나 아래로 표시하세요(세션마다 재권유 안 함):")
+    print('  python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" brief.routine_enabled=true')
 
 
 if __name__ == "__main__":
