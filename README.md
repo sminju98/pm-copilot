@@ -68,6 +68,21 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 > **"내일 회의 준비해줘 / 회의록 정리해줘"** → 안건 브리핑 · 액션아이템 정리
 > **"/schedule 평일 오전 9시에 기획 사수 데일리 브리핑 실행"** → 매일 자동
 
+## 슬래시 명령 (자주 쓰는 것 지름길)
+
+| 명령 | 동작 |
+|---|---|
+| `/pm-copilot:setup` | 첫 설정(대화형) |
+| `/pm-copilot:brief` | 오늘 데일리 브리핑 |
+| `/pm-copilot:worklog` | 업무일지(오늘 할일/한일) 🔒 |
+| `/pm-copilot:review <내용>` | 사수한테 검사받기 |
+| `/pm-copilot:spec <아이디어>` | 기획서/PRD 초안 |
+| `/pm-copilot:standup` | 팀 현황 🔒 나만 보기 |
+| `/pm-copilot:weekly` | 주간 회고 |
+| `/pm-copilot:learn` | 오늘의 배움(AI·기획 코칭) |
+
+> ⚠️ **슬래시 명령은 새 세션에서 로드**됩니다(설치·업데이트 후 세션 재시작). 그리고 위 8개 말고도 **나머지 기능은 자연어로 그냥 말하면** 동작해요 — "우선순위 매겨줘", "회의록 정리해줘", "이 지표 보고서 써줘" 등. (스킬은 슬래시가 아니라 대화로 트리거됩니다.)
+
 ## 구성 (스킬 23종)
 
 **매일/주기 — 브리핑 엔진**
@@ -112,7 +127,8 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 23개 스킬
+├─ skills/                      위 23개 스킬 (자연어로 트리거)
+├─ commands/                    슬래시 명령 8개 (/pm-copilot:...)
 ├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)
 ├─ templates/                   context/brief 템플릿
