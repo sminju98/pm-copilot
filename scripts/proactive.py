@@ -34,41 +34,30 @@ def build():
     if cfg.get("proactive", {}).get("enabled", True) is False:
         return []
     today = datetime.date.today()
-    weekday = today.weekday()
     out = []
+    # 원칙: 원문(할일·미결 텍스트) 노출 금지 — 개수/일반 안내만. 실제로 '있는' 것만 알림
+    # (없는 걸 조르지 않음 → 무관한 프로젝트 세션에선 조용). user-scope 훅이라 어디서든 뜨므로.
 
-    # 오늘 업무일지
+    # 오늘 업무일지의 '남은 할 일' (개수만)
     wl = _read(os.path.join(WORKLOG_DIR, f"{today.isoformat()}.md"))
     todos_open = [l for l in wl.splitlines() if l.strip().startswith("- [ ]")]
-    dones = [l for l in wl.splitlines()
-             if l.strip().startswith("- [") and not l.strip().startswith("- [ ]")]
-    if not wl and weekday < 5:
-        out.append("오늘 업무일지가 아직 없어요. '오늘 할 일 정리해줘'로 시작할까요?")
-    else:
-        if todos_open:
-            first = todos_open[0].split("]", 1)[-1].strip()
-            out.append(f"오늘 남은 할 일 {len(todos_open)}개 (예: {first})")
-        if dones:
-            out.append(f"오늘 한 일 {len(dones)}건 기록됨 — 마감 때 요약·검토해드릴까요?")
+    if todos_open:
+        out.append(f"오늘 남은 할 일 {len(todos_open)}개 — '오늘 할 일 보여줘'")
 
-    # 오늘 브리핑 여부(평일)
-    if weekday < 5 and not os.path.exists(os.path.join(BRIEFS_DIR, f"{today.isoformat()}-private.md")):
-        out.append("오늘 데일리 브리핑을 아직 안 돌렸어요 — '오늘 브리핑 돌려줘'.")
-
-    # 지난 브리핑에서 아직 열린 것
-    opens = [l.strip("*# -") for l in _read(os.path.join(DATA_DIR, "last_brief_private.md")).splitlines()
+    # 지난 브리핑 미결 (개수만, 본문 노출 안 함)
+    opens = [l for l in _read(os.path.join(DATA_DIR, "last_brief_private.md")).splitlines()
              if l.strip().startswith("확인 필요")]
     if opens:
-        out.append("지난 브리핑 미결: " + opens[0][:80])
+        out.append("지난 브리핑에 미결 항목이 있어요 — '브리핑 다시 보여줘'")
 
-    # 묵힌 백로그(7일+)
+    # 묵힌 백로그(7일+, 개수만)
     bl = [l for l in _read(os.path.join(DATA_DIR, "backlog.md")).splitlines() if l.startswith("- [")]
     cutoff = (today - datetime.timedelta(days=7)).isoformat()
     stale = [l for l in bl if l[3:13] < cutoff]
     if stale:
-        out.append(f"묵힌 백로그 {len(stale)}개(7일+) — 볼까요? '백로그 보여줘'")
+        out.append(f"묵힌 백로그 {len(stale)}개(7일+) — '백로그 보여줘'")
 
-    return out[:4]
+    return out[:3]
 
 
 def main():

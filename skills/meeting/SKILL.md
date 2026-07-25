@@ -21,7 +21,7 @@ description: 회의 전에는 안건·참석자·배경을 브리핑하고, 회�
 ## 🟦 모드 A — 회의 전 (prep)
 ### 1. 재료 모으기
 ```bash
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null
 ```
 - 캘린더/메일 커넥터가 있으면 해당 회의의 초대·스레드에서 안건·참석자·첨부를 읽는다.
 - 노션/Confluence/Jira 커넥터가 있으면 관련 문서·티켓을 찾아 배경을 모은다.

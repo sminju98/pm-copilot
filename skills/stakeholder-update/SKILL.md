@@ -9,8 +9,8 @@ description: 같은 진행상황을 청중별로 톤을 바꿔 업데이트 초�
 
 ## 1. 재료
 ```bash
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null
-ls "$CLAUDE_PLUGIN_ROOT/data/briefs/" 2>/dev/null   # 최근 진행상황
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null
+ls "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/briefs/" 2>/dev/null   # 최근 진행상황
 ```
 최근 진행/결정/지표(확인된 것)를 모은다. 부족하면 사용자에게 이번 기간 핵심 3가지를 묻는다.
 

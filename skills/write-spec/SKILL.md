@@ -16,7 +16,7 @@ description: 아이디어 한 줄이나 문제 정의를 받아 기획서/PRD �
 
 ## 2. 데이터 원칙
 - 시장·유저·지표 수치는 **확인된 것만** 인용. 없으면 "확인 필요(무엇을 보면 되는지)".
-- 컨텍스트 문서/커넥터에 있는 실제 프로덕트 정보를 반영한다: `cat "$CLAUDE_PLUGIN_ROOT/data/context.md"`.
+- 컨텍스트 문서/커넥터에 있는 실제 프로덕트 정보를 반영한다: `cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md"`.
 
 ## 3. PRD 구조 (각 항목에 '왜'를 붙인다)
 1. **한 줄 요약(TL;DR)** — 무엇을 왜 만드나.

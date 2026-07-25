@@ -14,7 +14,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import HOME
+from common import HOME, PRIVATE_SENTINEL
 
 WORKLOG_DIR = os.path.join(HOME, "worklog")
 TODO_H = "## 오늘의 할 일"
@@ -30,7 +30,7 @@ def _ensure(d):
     p = day_path(d)
     if not os.path.exists(p):
         with open(p, "w", encoding="utf-8") as f:
-            f.write(f"# 업무일지 {d} (🔒 나만 보기)\n\n{TODO_H}\n\n{DONE_H}\n")
+            f.write(f"<!-- {PRIVATE_SENTINEL} -->\n# 업무일지 {d} (🔒 나만 보기)\n\n{TODO_H}\n\n{DONE_H}\n")
     return p
 
 

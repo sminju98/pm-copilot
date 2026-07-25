@@ -19,7 +19,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import ROOT, http_request, load_config, looks_private
+from common import DATA_DIR, ROOT, http_request, load_config, looks_private
 
 NOTION_VERSION = "2022-06-28"
 MAX_LEN = 1900
@@ -76,7 +76,7 @@ def main():
     if args.text is not None:
         md = args.text
     elif args.file:
-        path = args.file if os.path.isabs(args.file) else os.path.join(ROOT, args.file)
+        path = args.file if os.path.isabs(args.file) else os.path.join(DATA_DIR, args.file)
         with open(path, encoding="utf-8") as f:
             md = f.read()
     elif not sys.stdin.isatty():

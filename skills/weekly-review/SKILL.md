@@ -9,8 +9,8 @@ description: 한 주를 회고하는 주간 브리핑을 만든다. 이번 주 �
 
 ## 1. 재료 모으기
 ```bash
-ls "$CLAUDE_PLUGIN_ROOT/data/briefs/" 2>/dev/null            # 이번 주 데일리 브리핑들
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null        # 목표·로드맵
+ls "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/briefs/" 2>/dev/null            # 이번 주 데일리 브리핑들
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null        # 목표·로드맵
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log decision --list --since 7   # 이번 주 결정
 ```
 커넥터(노션/Jira)가 있으면 이번 주 완료/이동 티켓도 읽는다. 없으면 위 로컬 자료로.

@@ -89,7 +89,7 @@ def http_request(url, payload=None, headers=None, method=None, timeout=20):
 
 # 나만 보기 전용 콘텐츠를 기계가 식별하는 표식 — 팀 채널 오전송을 내용 기반으로 막는 백스톱.
 PRIVATE_SENTINEL = "PM-COPILOT:PRIVATE-ONLY"
-_PRIVATE_MARKERS = (PRIVATE_SENTINEL, "팀원별", "팀원 현황", "팀 현황")
+_PRIVATE_MARKERS = (PRIVATE_SENTINEL, "팀원별", "팀원 현황", "팀 현황", "나만 보기", "로컬 전용", "공유 안 함")
 
 
 def looks_private(text):

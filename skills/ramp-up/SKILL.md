@@ -9,7 +9,7 @@ description: 신입 PM 온보딩 — 제품·팀·용어·지표를 내부 문�
 
 ## 1. 소스에서 파악
 ```bash
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null   # 이미 있으면 활용
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null   # 이미 있으면 활용
 ```
 - 커넥터(Notion/Confluence/위키/Jira)가 있으면 **제품 개요·로드맵·최근 결정·진행 중 프로젝트**를 읽어 요약. 없으면 사용자에게 물어 채운다.
 - 있는 것만으로 시작하고, 모르는 건 "확인 필요 / 팀에 물어볼 것"으로.

@@ -9,7 +9,7 @@ description: 경쟁사 동향·업계 레퍼런스·테크뉴스를 리서치해
 
 ## 1. 대상 파악
 ```bash
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null   # 경쟁사·키워드·우리 포지션
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null   # 경쟁사·키워드·우리 포지션
 ```
 컨텍스트의 경쟁사/키워드를 리서치 대상으로 삼는다. 없으면 사용자에게 경쟁사 2~3곳과 관심 키워드를 물어 컨텍스트에 적어둔다.
 

@@ -68,7 +68,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 > **"내일 회의 준비해줘 / 회의록 정리해줘"** → 안건 브리핑 · 액션아이템 정리
 > **"/schedule 평일 오전 9시에 기획 사수 데일리 브리핑 실행"** → 매일 자동
 
-## 구성 (스킬 22종)
+## 구성 (스킬 23종)
 
 **매일/주기 — 브리핑 엔진**
 
@@ -98,6 +98,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `doc-polish` | 신입 문서 표준으로 다듬기 + 왜 고쳤는지 코칭 |
 | `ramp-up` | 신입 온보딩 — 제품·팀·지표 빠르게 학습 |
 | `experiment` | A/B 실험 설계 + 결과 판독(무작정 결론 금지) |
+| `pm-growth` | 오늘의 배움 — AI 활용법·바이브코딩·기획역량을 조금씩 코칭 |
 
 **개인 전용 — 🔒 로컬(공유 안 함)**
 
@@ -111,7 +112,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 22개 스킬
+├─ skills/                      위 23개 스킬
 ├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)
 ├─ templates/                   context/brief 템플릿

@@ -14,7 +14,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import DATA_DIR
+from common import DATA_DIR, PRIVATE_SENTINEL
 
 LOGS = {"backlog": "backlog.md", "decision": "decisions.md"}
 TITLES = {"backlog": "PM 전용 비공개 백로그", "decision": "의사결정 로그"}
@@ -31,7 +31,7 @@ def add(log, text):
     stamp = datetime.datetime.now().astimezone().strftime("%Y-%m-%d %H:%M")
     with open(p, "a", encoding="utf-8") as f:
         if new:
-            f.write(f"# {TITLES[log]} (로컬 전용 · 공유 안 함)\n\n")
+            f.write(f"<!-- {PRIVATE_SENTINEL} -->\n# {TITLES[log]} (로컬 전용 · 공유 안 함)\n\n")
         f.write(f"- [{stamp}] {text}\n")
     print(f"[기록됨] {log}: {text}")
 

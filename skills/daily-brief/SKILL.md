@@ -10,8 +10,8 @@ description: 기획자용 데일리 브리핑을 한 번에 생성·전송한다
 ## 0. 준비 — 설정과 컨텍스트 로드
 ```bash
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/doctor.py"
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null || echo "(컨텍스트 문서 없음)"
-cat "$CLAUDE_PLUGIN_ROOT/config.json"
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null || echo "(컨텍스트 문서 없음)"
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/config.json"
 ```
 `brief.sections`에서 켜진 섹션만 만든다. `delivery.team/private.enabled`로 어디로 보낼지 정한다.
 
@@ -49,17 +49,17 @@ python3 -c "import sys; sys.path.insert(0,'$CLAUDE_PLUGIN_ROOT/scripts'); import
 초안을 파일로 저장한 뒤 스크립트로 보낸다. (아래는 예시 — 실제로는 네가 만든 마크다운을 파일에 쓰고 실행)
 ```bash
 # 저장 (네가 생성한 마크다운을 각각 파일로 write 한 뒤)
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind private --file "$CLAUDE_PLUGIN_ROOT/data/_draft_private.md"
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind team    --file "$CLAUDE_PLUGIN_ROOT/data/_draft_team.md"
+python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind private --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/_draft_private.md"
+python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind team    --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/_draft_team.md"
 
 # 개인본 전송 (민감 → 팀 채널 차단 플래그) — 슬랙 / 노션 중 설정된 것
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py"  --to private --sensitive \
-  --title "오늘의 기획 브리핑 (개인)" --file "$CLAUDE_PLUGIN_ROOT/data/last_brief_private.md"
+  --title "오늘의 기획 브리핑 (개인)" --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/last_brief_private.md"
 # python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_notion.py" --to private --sensitive --title "..." --file ...
 
 # 팀 공유본 전송 (delivery.team.enabled=true 일 때만)
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py"  --to team \
-  --title "오늘의 프로덕트 현황" --file "$CLAUDE_PLUGIN_ROOT/data/last_brief_team.md"
+  --title "오늘의 프로덕트 현황" --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/last_brief_team.md"
 ```
 - 전송 전 실제로 보낼지 애매하면 `--dry-run`을 붙여 결과를 먼저 확인한다.
 - 팀 채널이 꺼져 있으면(`enabled=false`) 팀 전송은 스크립트가 알아서 건너뛴다.

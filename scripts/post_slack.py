@@ -20,7 +20,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import ROOT, http_request, load_config, looks_private, env_webhook, ENV_WEBHOOK
+from common import DATA_DIR, http_request, load_config, looks_private, env_webhook, ENV_WEBHOOK
 
 
 def to_mrkdwn(md):
@@ -44,9 +44,12 @@ def _read_body(args):
     if args.text is not None:
         return args.text
     if args.file:
-        path = args.file if os.path.isabs(args.file) else os.path.join(ROOT, args.file)
-        with open(path, encoding="utf-8") as f:
-            return f.read()
+        path = args.file if os.path.isabs(args.file) else os.path.join(DATA_DIR, args.file)
+        try:
+            with open(path, encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            raise SystemExit(f"[파일 없음] {path} — 먼저 브리핑을 생성·저장했는지 확인하세요(save_brief).")
     if not sys.stdin.isatty():
         return sys.stdin.read()
     raise SystemExit("보낼 내용이 없습니다. --text, --file, 또는 표준입력(stdin) 중 하나를 주세요.")

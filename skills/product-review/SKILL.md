@@ -9,7 +9,7 @@ description: 우리 프로덕트/프로젝트의 현재 현황을 다각도로 �
 
 ## 1. 컨텍스트 로드
 ```bash
-cat "$CLAUDE_PLUGIN_ROOT/data/context.md" 2>/dev/null
+cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null
 python3 "$CLAUDE_PLUGIN_ROOT/scripts/doctor.py"
 ```
 노션/태스크 커넥터가 연결돼 있으면(설정 `sources.use_notion/use_task_tracker`) 진행 중 과제·최근 변경·지표를 읽어 온다. 없으면 컨텍스트 문서만으로 한다.
