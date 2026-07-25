@@ -66,6 +66,13 @@ def http_request(url, payload=None, headers=None, method=None, timeout=20):
     for k, v in (headers or {}).items():
         req.add_header(k, v)
     ctx = ssl.create_default_context()
+    # macOS python.org 파이썬은 기본 CA 저장소가 비어 SSL 검증이 실패하곤 한다.
+    # certifi가 설치돼 있으면 그 CA 번들을 쓴다(없으면 시스템 기본 — 하드 의존성 아님).
+    try:
+        import certifi
+        ctx.load_verify_locations(certifi.where())
+    except Exception:
+        pass
     try:
         with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
             status = getattr(resp, "status", None)

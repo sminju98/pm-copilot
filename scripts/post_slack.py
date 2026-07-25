@@ -97,9 +97,16 @@ def main():
         return
 
     res = http_request(webhook, payload={"text": text})
-    if res.get("error") or (res.get("status") or 0) >= 300:
-        reason = res.get("error") or f"HTTP {res.get('status')}"
-        raise SystemExit(f"[슬랙 전송 실패] {reason} — 웹훅이 만료·삭제됐을 수 있어요. 새 웹훅을 발급해 저장하세요.")
+    st = res.get("status")
+    if res.get("error") or (st or 0) >= 300:
+        reason = res.get("error") or f"HTTP {st}"
+        if st and 400 <= st < 500:
+            hint = "웹훅이 만료·삭제됐을 수 있어요 — 새 웹훅을 발급해 저장하세요."
+        elif not st:  # 네트워크/SSL 등 — 웹훅 자체 문제 아님(오진 방지)
+            hint = "네트워크/인증서 문제로 보입니다(웹훅은 정상일 수 있음). 맥이면 Python 'Install Certificates.command' 실행 또는 `pip3 install certifi` 를 해보세요."
+        else:
+            hint = "잠시 후 다시 시도해 보세요."
+        raise SystemExit(f"[슬랙 전송 실패] {reason} — {hint}")
     print(f"[슬랙 전송 성공] to={args.to}")
 
 
