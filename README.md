@@ -87,7 +87,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `/pm-copilot:weekly` | 주간 회고 |
 | `/pm-copilot:learn` | 오늘의 배움(AI·기획 코칭) |
 
-**38개 스킬 전부 이름 그대로 명령이 됩니다** — `/pm-copilot:ramp-up`, `/pm-copilot:qa`, `/pm-copilot:voc`, `/pm-copilot:routine`, `/pm-copilot:checkin` …
+**42개 스킬 전부 이름 그대로 명령이 됩니다** — `/pm-copilot:qa`, `/pm-copilot:checkin`, `/pm-copilot:ir-deck`, `/pm-copilot:user-guide`, `/pm-copilot:product-video` …
 
 > ⚠️ 슬래시 명령은 **새 세션에서 로드**됩니다(설치·업데이트 후 재시작). 슬래시를 몰라도 **자연어로 그냥 말하면** 다 동작해요 — "우선순위 매겨줘", "회의록 정리해줘".
 
@@ -98,7 +98,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 - **자동 루틴**: 예약 걸면 매일 아침 슬랙으로 브리핑(사람 확인 없이 전송은 예약 실행에서만).
 - 개인정보 원문은 노출 안 함(개수/일반 안내만). 시끄러우면 `proactive.enabled=false`로 끕니다.
 
-## 구성 (스킬 38종)
+## 구성 (스킬 42종)
 
 **매일/주기 — 브리핑 엔진**
 
@@ -157,12 +157,16 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `simple-design` | 배너·소셜카드·간단 UI(클로드 디자인 활용) |
 | `qa` | 배포 전 검수(문서+실제 화면) → QA 시트 → 수정 인사이트·기획 |
 | `voc` | 고객 VOC 분석→인사이트→기획 + 미응답엔 추천 답변 초안 |
+| `ir-deck` | 투자유치 IR 덱(피치덱) — 스토리라인·표준 장표·예상 Q&A·데이터 갭 |
+| `user-guide` | 사용자 가이드/도움말(온보딩·How-to·FAQ) — 과업 중심 |
+| `product-manual` | 제품 설명서/사양서(기능 레퍼런스·제약·권한) |
+| `product-video` | 제품 소개 영상 스크립트·스토리보드(씬별 화면/나레이션/길이) |
 
 ```
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 38개 스킬 (자연어로 트리거)
+├─ skills/                      위 42개 스킬 (자연어로 트리거)
 ├─ commands/                    슬래시 명령 44개 (/pm-copilot:...)
 ├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)
