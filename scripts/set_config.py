@@ -29,15 +29,52 @@ def parse_value(s):
     body = s[1:] if s.startswith("-") else s
     if body.isdigit():
         return int(s)
-    return s
+    # 소수 — 비율·배수 같은 값이 문자열로 저장되면 계산이 조용히 깨진다.
+    # "30%" 도 받아 0.3 으로 바꾼다(비율을 퍼센트로 적는 실수가 잦다).
+    if body.endswith("%"):
+        try:
+            return float(body[:-1]) / 100
+        except ValueError:
+            return s
+    try:
+        return float(s)
+    except ValueError:
+        return s
 
 
 def set_path(cfg, path, value):
+    """점 경로로 값을 넣는다. 숫자 조각은 리스트 인덱스로 취급한다.
+
+    배열 항목(예: offerings.0.margin_rate)을 dict 전용으로 두면 AttributeError 로
+    죽는다. 설정 경로가 막히면 그 기능 전체가 잠기므로 배열을 함께 지원한다."""
     keys = path.split(".")
     node = cfg
-    for k in keys[:-1]:
-        node = node.setdefault(k, {})
-    node[keys[-1]] = value
+    for i, k in enumerate(keys[:-1]):
+        nxt = keys[i + 1]
+        if isinstance(node, list):
+            node = node[_as_index(k, node, path)]
+            continue
+        if k not in node or not isinstance(node[k], (dict, list)):
+            node[k] = [] if nxt.isdigit() else {}
+        node = node[k]
+
+    last = keys[-1]
+    if isinstance(node, list):
+        node[_as_index(last, node, path)] = value
+    else:
+        node[last] = value
+
+
+def _as_index(k, seq, path):
+    if not k.isdigit():
+        raise SystemExit(f"[에러] '{path}' — '{k}' 위치는 배열이라 숫자 인덱스가 필요합니다(0부터). 아무것도 저장하지 않았습니다.")
+    idx = int(k)
+    if idx >= len(seq):
+        raise SystemExit(
+            f"[에러] '{path}' — 인덱스 {idx} 가 범위를 벗어났습니다(현재 {len(seq)}개). "
+            "아무것도 저장하지 않았습니다."
+        )
+    return idx
 
 
 def _redact(path, value):
