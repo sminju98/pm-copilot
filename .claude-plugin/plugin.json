@@ -6,6 +6,9 @@
     "name": "songminju",
     "email": "sminju98@gmail.com"
   },
+  "homepage": "https://github.com/sminju98/pm-copilot",
+  "repository": "https://github.com/sminju98/pm-copilot",
+  "license": "MIT",
   "keywords": [
     "pm",
     "product-management",
@@ -21,5 +24,36 @@
     "meeting",
     "jira",
     "confluence"
-  ]
+  ],
+  "hooks": "./hooks/hooks.json",
+  "userConfig": {
+    "me_name": {
+      "type": "string",
+      "title": "내 이름/호칭",
+      "description": "브리핑·문서에 쓸 내 이름 (예: 송민주). 나중에 '설정'에서 바꿀 수 있어요."
+    },
+    "product_name": {
+      "type": "string",
+      "title": "담당 프로덕트 이름",
+      "description": "현황·리서치의 기준이 되는 제품 이름 (예: 이미지팩토리)."
+    },
+    "slack_private_webhook": {
+      "type": "string",
+      "title": "나만 보기 슬랙 Webhook URL",
+      "description": "팀원 현황 등 개인용 브리핑을 받을 Slack Incoming Webhook (https://hooks.slack.com/...). 안 넣으면 나중에 대화형 '설정'으로 연결.",
+      "sensitive": true
+    },
+    "slack_team_webhook": {
+      "type": "string",
+      "title": "팀 공유 슬랙 Webhook URL (선택)",
+      "description": "팀 공유 브리핑을 보낼 Slack Incoming Webhook. 개인용과 반드시 다른 채널로 — 팀원 현황은 여기로 절대 안 나갑니다.",
+      "sensitive": true
+    },
+    "proactive_enabled": {
+      "type": "boolean",
+      "title": "세션 시작 시 먼저 챙기기",
+      "description": "새 세션마다 오늘 할 일·미결·브리핑을 먼저 짚어줄지 (선제 훅). 나중에 끌 수 있어요.",
+      "default": true
+    }
+  }
 }

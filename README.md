@@ -47,7 +47,9 @@ claude plugin install pm-copilot
 - (Claude Code 세션 안이라면 `/plugin marketplace add sminju98/pm-copilot` → `/plugin install pm-copilot` 도 동일)
 - 첫 설치 때 "Anthropic이 관리하지 않는 플러그인" 신뢰 경고가 뜹니다 — 신뢰하면 확인.
 
-## 셋업 (둘 중 하나)
+## 셋업 (셋 중 하나)
+
+**A′. 설치 시 바로 묻기 (제일 쉬움)** — 플러그인을 켤 때 이름·프로덕트·슬랙 Webhook을 **클로드 코드가 직접 물어봅니다**(민감값은 안전 저장). 여기서 답하면 config 없이도 바로 브리핑 전송이 돼요. 건너뛰어도 아래 B로 언제든 설정 가능.
 
 **A. 빠른 셋업 (웹훅만 있으면 1줄)** — 슬랙 Incoming Webhook을 만든 뒤, 클로드에게 "이 웹훅으로 빠른 셋업 해줘" 하거나 직접:
 ```

@@ -4,12 +4,38 @@
     "name": "songminju",
     "email": "sminju98@gmail.com"
   },
-  "description": "기획 사수(PM Copilot) — 기획자 업무 자동화 플러그인",
+  "description": "기획 사수(PM Copilot) — 기획자 업무를 반자동으로 보조하는 무료 오픈소스 플러그인",
   "plugins": [
     {
       "name": "pm-copilot",
       "source": "./",
-      "description": "기획자(PM) 업무를 반자동으로 보조 — 데일리 브리핑·시장 리서치·팀원 현황(나만 보기)·사수 검토·회의·PRD·우선순위·프로젝트관리·의사결정·성장코칭(스킬 23종)"
+      "version": "1.0.0",
+      "displayName": "기획 사수 (PM Copilot)",
+      "description": "기획자(PM) 업무를 반자동으로 보조 — 데일리 브리핑·시장 리서치·팀원 현황(나만 보기)·사수 검토·PRD/화면설계·프로젝트관리(간트/로드맵)·QA·고객 VOC·성장코칭까지 스킬 37종. ⚡선제 훅: 세션을 열면 오늘 할 일·미결·브리핑을 먼저 챙김. 💬설치 후 이름·프로덕트·슬랙 Webhook을 바로 물어보는 대화형 설정. 🔌커넥터 연동: Slack·Notion·Jira·이메일을 claude.ai 커넥터로 연결하면 팀·자료를 자동 탐색(미연결 시 웹 리서치+컨텍스트로 동작).",
+      "author": {
+        "name": "songminju",
+        "email": "sminju98@gmail.com"
+      },
+      "homepage": "https://github.com/sminju98/pm-copilot",
+      "repository": "https://github.com/sminju98/pm-copilot",
+      "license": "MIT",
+      "category": "product-management",
+      "keywords": [
+        "pm",
+        "product-management",
+        "기획",
+        "daily-brief",
+        "standup",
+        "automation",
+        "slack",
+        "notion",
+        "jira",
+        "research",
+        "prd",
+        "roadmap",
+        "qa",
+        "voc"
+      ]
     }
   ]
 }
