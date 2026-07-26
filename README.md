@@ -87,7 +87,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `/pm-copilot:weekly` | 주간 회고 |
 | `/pm-copilot:learn` | 오늘의 배움(AI·기획 코칭) |
 
-**37개 스킬 전부 이름 그대로 명령이 됩니다** — `/pm-copilot:ramp-up`, `/pm-copilot:prioritize`, `/pm-copilot:qa`, `/pm-copilot:voc`, `/pm-copilot:routine` …
+**38개 스킬 전부 이름 그대로 명령이 됩니다** — `/pm-copilot:ramp-up`, `/pm-copilot:qa`, `/pm-copilot:voc`, `/pm-copilot:routine`, `/pm-copilot:checkin` …
 
 > ⚠️ 슬래시 명령은 **새 세션에서 로드**됩니다(설치·업데이트 후 재시작). 슬래시를 몰라도 **자연어로 그냥 말하면** 다 동작해요 — "우선순위 매겨줘", "회의록 정리해줘".
 
@@ -98,7 +98,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 - **자동 루틴**: 예약 걸면 매일 아침 슬랙으로 브리핑(사람 확인 없이 전송은 예약 실행에서만).
 - 개인정보 원문은 노출 안 함(개수/일반 안내만). 시끄러우면 `proactive.enabled=false`로 끕니다.
 
-## 구성 (스킬 37종)
+## 구성 (스킬 38종)
 
 **매일/주기 — 브리핑 엔진**
 
@@ -112,6 +112,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 | `team-standup` | ③ 팀원별 한일/할일 — 🔒 **나만 보기 전용** |
 | `metrics-watch` | 지표 이상탐지 — 급등·급락 때만 알림 |
 | `routine` | 브리핑·회고·지표·VOC를 매일/매주 **클라우드 루틴**으로 자동 실행(무인) |
+| `checkin` | 하루 1~2회 스스로 진도 점검 → **"이거 이상한데?"** 이상 신호만 선제 알림(무인 가능) |
 
 **온디맨드 — 만들기·결정 도구**
 
@@ -161,7 +162,7 @@ python3 <플러그인폴더>/scripts/quicksetup.py --private "<나만보기 웹�
 pm-copilot/
 ├─ .claude-plugin/plugin.json   플러그인 manifest
 ├─ config.example.json          설정 템플릿 (→ config.json 으로 복사, git 제외)
-├─ skills/                      위 37개 스킬 (자연어로 트리거)
+├─ skills/                      위 38개 스킬 (자연어로 트리거)
 ├─ commands/                    슬래시 명령 44개 (/pm-copilot:...)
 ├─ hooks/hooks.json             세션 시작 시 '먼저 챙김'(프로액티브)
 ├─ scripts/                     동작 파이썬 (표준 라이브러리만, 설치 불필요)

@@ -6,6 +6,7 @@ import datetime
 import json
 import os
 import ssl
+import sys
 import urllib.error
 import urllib.request
 
@@ -175,3 +176,61 @@ def save_brief(text, date=None, kind="private"):
     with open(latest, "w", encoding="utf-8") as f:
         f.write(text)
     return path
+
+
+# ============================================================
+# 훅(hook) 공용 유틸 — 선제적 사수 동작(세션시작·요청·저장·종료)에서 쓴다.
+# ============================================================
+ACTIVITY_DIR = os.path.join(DATA_DIR, "_activity")
+PENDING_RETRO = os.path.join(DATA_DIR, "_pending_retrospect")
+
+
+def read_hook_input(timeout=2):
+    """훅 stdin(JSON)을 블로킹 없이 읽어 dict로. 데이터 없거나 오류면 {}.
+    (일부 이벤트에서 stdin이 안 닫혀 무한 대기하는 것을 select로 방지.)"""
+    raw = ""
+    try:
+        import select
+        if select.select([sys.stdin], [], [], timeout)[0]:
+            raw = sys.stdin.read()
+    except Exception:
+        try:
+            raw = sys.stdin.read()
+        except Exception:
+            return {}
+    if not raw.strip():
+        return {}
+    try:
+        return json.loads(raw)
+    except Exception:
+        return {}
+
+
+def emit_context(event, text):
+    """훅 stdout으로 모델에 컨텍스트를 주입한다(UserPromptSubmit/PostToolUse/SessionStart 등)."""
+    text = (text or "").strip()
+    if not text:
+        return
+    print(json.dumps(
+        {"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}},
+        ensure_ascii=False,
+    ))
+
+
+def proactive_cfg():
+    """proactive 설정 반환. 전체 off면 None. 개별 토글은 호출부에서 기본 True로 처리."""
+    p = load_config(soft=True).get("proactive", {})
+    if p.get("enabled", True) is False:
+        return None
+    return p
+
+
+def log_activity(kind, detail):
+    """오늘 활동 원장에 한 줄 남긴다(세션 종료 시 업무일지 초안 등에 사용). 실패해도 조용히."""
+    try:
+        os.makedirs(ACTIVITY_DIR, exist_ok=True)
+        path = os.path.join(ACTIVITY_DIR, datetime.date.today().isoformat() + ".md")
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(f"- {datetime.datetime.now().strftime('%H:%M')} · {kind} · {detail}\n")
+    except Exception:
+        pass

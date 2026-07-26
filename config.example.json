@@ -48,7 +48,10 @@
     "routine_enabled": false
   },
   "proactive": {
-    "enabled": true
+    "enabled": true,
+    "prompt_nudge": true,
+    "review_on_save": true,
+    "worklog_on_end": true
   },
   "context_file": "data/context.md",
   "setup": {
