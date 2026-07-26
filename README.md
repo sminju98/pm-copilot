@@ -197,9 +197,11 @@ pm-copilot/
 > 회사 슬랙은 커스텀 앱 설치에 **관리자 승인**이 필요할 수 있다. 막히면 관리자에게 "Incoming Webhook 앱 승인"을 요청하거나, 그동안은 전송 없이 **채팅으로 브리핑 미리보기**만 받아도 된다.
 
 ### 2) 읽기 소스 — 커넥터 (선택)
-업무 메일·노션을 브리핑에 반영하려면 **claude.ai → 설정 → 커넥터**에서 Gmail/Notion을 연결한다.
-계정 커넥터로 연결하면 **예약(클라우드) 실행에서도** 클로드가 읽을 수 있다.
-(로컬 CLI로만 붙인 MCP는 예약 실행에선 안 보인다. 안 연결해도 웹 리서치+컨텍스트로 동작한다.)
+플러그인이 **연결하는 도구**(`.mcp.json`, 마켓에서 "연결하는 도구" 목록으로 표시): **Slack · Notion · Jira(Atlassian) · Linear · Asana · monday · ClickUp · Figma · Microsoft 365 · Gmail · Google Calendar**.
+- 원격 커넥터(Slack·Notion·Jira·Linear·Asana·monday·ClickUp·Figma)는 설치 시 자동 등록 → 처음 쓸 때 `/mcp`에서 로그인.
+- 관리형(Microsoft 365·Gmail·Google Calendar)은 **claude.ai → 설정 → 커넥터**에서 연결하면 자동으로 잡힌다(MS·구글 계열 모두 지원).
+- **Figma**: 연결하면 기존 기획서·디자인을 **열람**하고, 권한이 있으면 **생성·편집**까지(→ screen-spec·mockup·simple-design 등이 활용). 불일치 시 최신순 기준이되, 기획자 권한상 **기획서를 현행화**하고 디자인 수정은 디자이너에게 요청.
+- 계정 커넥터로 연결하면 **예약(클라우드) 실행에서도** 읽을 수 있다. 안 연결해도 웹 리서치+컨텍스트로 동작한다.
 
 ### 3) 컨텍스트 문서
 `templates/context.example.md`를 `data/context.md`로 복사해 현황·경쟁사·키워드·팀원을 적는다.

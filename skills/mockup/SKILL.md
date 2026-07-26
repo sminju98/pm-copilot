@@ -48,3 +48,6 @@ description: 화면 설명이나 [[screen-spec]]을 받아 자체 완결 HTML �
 목업은 "합의 도구"다. 예쁘게 만들려다 리뷰가 색깔 얘기로 새면 실패다.
 다음 단계로 클릭되는 걸 원하면 [[prototype]], 화면 요구사항부터 정리하려면 [[screen-spec]],
 UI 설계 원칙이 궁금하면 [[simple-design]]로 넘어가라.
+
+## 🎨 Figma 연동 (커넥터 `figma` 연결 시)
+- 목업을 HTML 대신 **Figma에 직접 생성/편집**(use_figma·generate_figma_design) — **편집 권한이 있을 때.** 기존 디자인이 있으면 열람 후 확장. 권한이 없으면 별도 파일로 만들어 디자이너에게 전달.

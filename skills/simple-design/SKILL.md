@@ -25,3 +25,6 @@ description: 배너·소셜 카드·OG 이미지·썸네일·간단 UI 시안 �
 - 화면 UI 저충실도는 [[mockup]], 인터랙티브는 [[prototype]], 요구사항부터면 [[screen-spec]].
 
 관련: [[mockup]] [[prototype]] [[screen-spec]] [[method]]
+
+## 🎨 Figma 연동 (커넥터 `figma` 연결 시)
+- 배너·소셜카드·간단 UI를 **Figma에서 생성/편집**(편집 권한 시). 기존 브랜드 프레임을 열람해 톤을 맞춘다. 권한 없으면 클로드 디자인(HTML/SVG)으로 만들어 전달.

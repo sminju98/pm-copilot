@@ -44,3 +44,7 @@ PRD 말고 나머지 기획 문서 전부를 다룬다. 아무 템플릿이나 �
 - [ ] 결정이 필요한 빈칸을 사용자에게 명확히 넘겼나
 
 관련: [[write-spec]](PRD) · [[research-synthesis]](리서치 원자료 정리) · [[decision-log]](결정 기록) · [[ask-sunbae]](검토)
+
+## 🎨 Figma 연동 (커넥터 `figma` 연결 시)
+- 기존 Figma 디자인·기획 자료를 **열람**해 문서 근거로 삼는다(get_design_context). 시각 산출물은 [[mockup]]·[[simple-design]]로.
+- 디자인과 문서가 어긋나면 최신순 기준 — 단 권한상 **기획자는 문서 쪽만 현행화**하고, 디자인 수정은 디자이너에게 요청.

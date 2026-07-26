@@ -27,6 +27,22 @@
     "clickup": {
       "type": "http",
       "url": "https://mcp.clickup.com/mcp"
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
+    },
+    "microsoft 365": {
+      "type": "http",
+      "url": ""
+    },
+    "gmail": {
+      "type": "http",
+      "url": ""
+    },
+    "google calendar": {
+      "type": "http",
+      "url": ""
     }
   }
 }
