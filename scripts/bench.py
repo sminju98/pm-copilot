@@ -84,6 +84,12 @@ def _bucket(v, buckets, unit="만"):
     return ""
 
 
+def _ref():
+    """유입 귀속 코드. 같은 설치는 같은 코드가 나오고, 코드로 사람을 되짚을 수는 없다."""
+    import hashlib
+    return "MC-" + hashlib.sha256(f"{HOME}|bench".encode()).hexdigest()[:8].upper()
+
+
 def _read_state():
     try:
         with open(STATE, encoding="utf-8") as f:
@@ -278,10 +284,27 @@ def main():
         if not st.get("optin"):
             print("  참여 중이 아닙니다. 아무것도 보내지 않았습니다. ('bench consent' 로 내용 확인)")
             return 2
-        # 수집 서버는 아직 없다. 있는 척하지 않는다 — 보낸다고 말하고 안 보내면 그게 최악이다.
-        print("  ⏸ 수집 서버가 아직 없습니다. 지금은 아무것도 전송되지 않습니다.")
-        print("     참여 의사만 기록해 두었고, 서버가 열리면 그때 'bench preview' 로")
-        print("     무엇이 나갈지 다시 확인한 뒤 보내게 됩니다.")
+        p = build()
+        if not p["rows"]:
+            print("  보낼 집계가 없습니다. 'bench preview' 로 확인하세요.")
+            return 1
+        try:
+            from common import fs_post
+        except Exception:
+            print("  전송 모듈을 불러오지 못했습니다. 아무것도 보내지 않았습니다.")
+            return 1
+        ok, why = fs_post("bench_agg", {"v": 1, "at": p["at"], "ref": _ref(),
+                                        "rows": p["rows"]})
+        if ok:
+            st["last_sent"] = datetime.datetime.now().isoformat(timespec="seconds")
+            _write_state(st)
+            print(f"  집계 {len(p['rows'])}칸을 보냈습니다. (참조 {_ref()})")
+            print("  보낸 내용은 'bench preview' 와 동일합니다.")
+        else:
+            # 실패를 성공으로 포장하지 않는다.
+            print(f"  ❌ 전송 실패: {why[:120]}")
+            print("     아무것도 보내지지 않았습니다. 다시 시도하셔도 됩니다.")
+            return 1
         return 0
 
     return preview()

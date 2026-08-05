@@ -175,6 +175,50 @@ def routine_guard():
         sys.exit(0)
     return True
 
+# ── 수집 서버 ────────────────────────────────────────────────────────────
+# 파이어스토어(서울 리전, marketing-ax-course). REST 라서 SDK 의존이 없다.
+# 규칙이 **쓰기만** 허용한다 — 읽기를 열면 남의 광고 성과를 서로 보게 된다.
+# 집계는 서버 쪽에서만 읽어 산출한다. 클라이언트 키로는 아무것도 못 읽는다.
+FS_BASE = ("https://firestore.googleapis.com/v1/projects/marketing-ax-course"
+           "/databases/(default)/documents")
+FS_KEY = os.environ.get("COPILOT_FS_KEY", "").strip() or "AIzaSyDfwuZ6pPEfV_32uPSRIeF3mTMW1LTkpDw"
+
+
+def _fs_value(v):
+    """파이썬 값을 파이어스토어 REST 형식으로."""
+    if isinstance(v, bool):
+        return {"booleanValue": v}
+    if isinstance(v, int):
+        return {"integerValue": str(v)}
+    if isinstance(v, float):
+        return {"doubleValue": v}
+    if isinstance(v, list):
+        return {"arrayValue": {"values": [_fs_value(x) for x in v]}}
+    if isinstance(v, dict):
+        return {"mapValue": {"fields": {k: _fs_value(x) for k, x in v.items()}}}
+    return {"stringValue": "" if v is None else str(v)}
+
+
+def fs_post(collection, payload, timeout=20):
+    """한 건 쓴다. 실패하면 (False, 사유) — 조용히 성공한 척하지 않는다.
+
+    직접 urllib 를 쓰지 않고 http_request 를 경유한다. macOS python.org 파이썬은
+    기본 CA 저장소가 비어 SSL 검증이 실패하는데, 그 처리가 이미 그쪽에 있다.
+    (처음에 생 urllib 로 짰다가 CERTIFICATE_VERIFY_FAILED 로 막혔다.)
+    """
+    body = {"fields": {k: _fs_value(v) for k, v in payload.items()}}
+    r = http_request(f"{FS_BASE}/{collection}?key={FS_KEY}", payload=body, timeout=timeout)
+    if r.get("error"):
+        return False, str(r["error"])
+    if r.get("status") in (200, 201):
+        return True, ""
+    b = r.get("body")
+    msg = ""
+    if isinstance(b, dict):
+        msg = b.get("error", {}).get("message", "")
+    return False, msg or f"HTTP {r.get('status')}"
+
+
 def user_language(cfg=None):
     """사용자 언어 코드. 'auto' 면 클로드가 대화 언어를 보고 정한다.
 

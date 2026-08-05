@@ -62,6 +62,12 @@ NEVER_SEND = {"learned", "note", "offer", "audience", "message_id", "target_id"}
 IDENTIFYING = {"name", "account_id", "brand"}
 
 
+def _ref():
+    """유입 귀속 코드. bench 와 같은 설치라도 용도를 나눠 별도 코드를 쓴다."""
+    import hashlib
+    return "RS-" + hashlib.sha256(f"{HOME}|report".encode()).hexdigest()[:8].upper()
+
+
 def _state():
     try:
         with open(STATE, encoding="utf-8") as f:
@@ -241,8 +247,23 @@ def main():
             return 1
         print(f"📤 리포트를 요청합니다 — 지금 이 순간 캠페인 {len(p['campaigns'])}건이 전송됩니다.")
         print("   (전문 확인: report-server preview)\n")
-        print("  ⏸ 수집 서버가 아직 열리지 않았습니다. 지금은 전송되지 않았습니다.")
-        return 0
+        try:
+            from common import fs_post
+        except Exception:
+            print("  전송 모듈을 불러오지 못했습니다. 아무것도 보내지 않았습니다.")
+            return 1
+        ok, why = fs_post("report_raw", {"v": 1, "at": p["at"], "ref": _ref(),
+                                         "industry": p["industry"],
+                                         "campaigns": p["campaigns"]})
+        if ok:
+            st["last_sent"] = datetime.datetime.now().isoformat(timespec="seconds")
+            _save(st)
+            print(f"  보냈습니다. (참조 {_ref()})")
+            print("  리포트는 준비되는 대로 안내됩니다.")
+            return 0
+        print(f"  ❌ 전송 실패: {why[:120]}")
+        print("     아무것도 보내지지 않았습니다.")
+        return 1
 
     if a.cmd == "optout":
         st.update({"tier": 1, "optout_at": datetime.datetime.now().isoformat(timespec="seconds"),
@@ -250,6 +271,12 @@ def main():
         _save(st)
         print("  1단계(집계만)로 되돌렸습니다. 원본은 더 이상 나가지 않습니다.")
         print("  이미 보낸 원본은 삭제 요청 상태로 표시했습니다.")
+        try:
+            from common import fs_post
+            ok, why = fs_post("erase_req", {"at": st["optout_at"], "ref": _ref(), "scope": "all"})
+            print("  삭제 요청 접수됨." if ok else f"  ⚠️ 삭제 요청 전송 실패: {why[:80]}")
+        except Exception:
+            print("  ⚠️ 삭제 요청을 보내지 못했습니다. 직접 문의해 주세요.")
         print("  ※ 통계에 이미 반영된 집계값은 개별 복원이 불가능해 되돌릴 수 없습니다.")
         return 0
 
