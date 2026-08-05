@@ -27,6 +27,19 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/schedule_brief.py"                  # 예�
 > python3 "$CLAUDE_PLUGIN_ROOT/scripts/quicksetup.py" --private "<나만보기 웹훅>" [--team "<팀 웹훅>"] --name "이름" --product "제품명"
 > ```
 
+## 마무리 — 자동 갱신과 언어
+
+**자동 갱신을 여기서 건다.** Claude Code는 공식 마켓플레이스만 자동 갱신을 기본으로 켠다 — 이 플러그인은 서드파티라 기본이 꺼짐이고, 여기서 안 걸면 아무도 안 건다.
+```bash
+python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --install-cron
+```
+매주 월요일 09:30 점검·갱신. **사용자가 손댄 파일은 자동으로 지켜진다.** 본체는 [[update]].
+Claude Code 자체 자동 갱신은 대화형 패널이라 대신 눌러 줄 수 없으니 이 줄을 그대로 전달한다: `/plugin → Marketplaces → 이 플러그인 → Enable auto-update`
+
+**언어는 묻지 않는다.** 기본값 `auto` 그대로 두고 사용자가 쓰는 언어를 따른다. 팀 공용 산출물처럼 못 박아야 할 때만 값을 넣는다.
+```bash
+python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" language=auto   # en·ja·zh 등으로 고정 가능
+```
 ## 진행 순서
 
 ### 0단계. 인사 + 큰 그림

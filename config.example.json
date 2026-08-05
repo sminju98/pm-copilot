@@ -4,6 +4,7 @@
     "role": "프로덕트 기획자",
     "timezone": "Asia/Seoul"
   },
+  "language": "auto",
   "product": {
     "name": "우리 서비스",
     "one_liner": "무엇을, 누구에게, 왜 좋은지 한 줄 소개",
@@ -17,7 +18,9 @@
     "use_jira": false,
     "use_confluence": false,
     "use_task_tracker": false,
-    "use_metrics": false
+    "use_metrics": false,
+    "use_drive": false,
+    "use_slack": false
   },
   "delivery": {
     "team": {

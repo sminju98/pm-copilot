@@ -78,6 +78,19 @@ def context_path(cfg=None):
     return rel if os.path.isabs(rel) else os.path.join(HOME, rel)
 
 
+def user_language(cfg=None):
+    """사용자 언어 코드. 'auto' 면 클로드가 대화 언어를 보고 정한다.
+
+    스킬 문서가 한국어인 것과 사용자가 쓰는 언어는 별개다 — 문서는 클로드에게 주는
+    지시문이지 사용자에게 보여줄 글이 아니다. 그래서 기본값이 'auto' 다.
+    """
+    if cfg is None:
+        cfg = load_config(soft=True) or {}
+    v = cfg.get("language") or cfg.get("brief", {}).get("language") or "auto"
+    v = str(v).strip().lower()
+    return v if v else "auto"
+
+
 def load_context(cfg=None):
     """사용자가 관리하는 프로덕트/팀/로드맵 컨텍스트 문서를 읽는다. 없으면 빈 문자열."""
     env = os.environ.get("PM_COPILOT_CONTEXT", "").strip()

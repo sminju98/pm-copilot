@@ -36,6 +36,10 @@
       "type": "http",
       "url": ""
     },
+    "google drive": {
+      "type": "http",
+      "url": ""
+    },
     "gmail": {
       "type": "http",
       "url": ""
