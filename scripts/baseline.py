@@ -105,7 +105,21 @@ def compare(channel, metric, value, industry=None):
     my_market = "KR"
     print(f"📊 내 값 {value} ({channel} · {metric})\n")
 
-    for r in sorted(cand, key=lambda x: (x.get("confidence") != "high",)):
+    # 업종을 안 주면 '전체' 행을 먼저 보여준다. 업종 15개를 라벨 없이 쏟으면
+    # 사용자가 어느 기준과 비교하는지 몰라 오히려 오도된다.
+    def is_all(r):
+        i = str(r.get("industry", "")).lower()
+        return "all" in i or "overall" in i or "전체" in i
+
+    if not industry:
+        overall = [r for r in cand if is_all(r)]
+        rest = [r for r in cand if not is_all(r)]
+        cand = overall or rest
+        extra = len(rest) if overall else 0
+    else:
+        extra = 0
+
+    for r in sorted(cand, key=lambda x: (x.get("confidence") != "high",))[:6]:
         s = _src(d, r.get("source"))
         base = r.get("value")
         try:
@@ -114,8 +128,22 @@ def compare(channel, metric, value, industry=None):
         except (TypeError, ValueError, ZeroDivisionError):
             rel = "-"
         mark = "" if r.get("market") == my_market else "  ← 다른 시장 수치"
-        print(f"  · 기준 {base} ({r.get('kind','')}, {r.get('market','')}) 대비 {rel}{mark}")
+        ind = r.get("industry", "") or "(전체)"
+        print(f"  · [{ind}] 기준 {base} ({r.get('kind','')}, {r.get('market','')}) 대비 {rel}{mark}")
         print(f"    출처 {s.get('name','?')} · {s.get('published','?')} · 표본 {s.get('sample','미공개')}")
+
+    if extra:
+        print(f"\n  · 업종별 기준 {extra}개가 더 있습니다 — --industry 로 지정하면 그 업종과 비교합니다.")
+
+    # 다른 채널의 같은 지표가 크게 다르면 반드시 알린다.
+    others = {}
+    for r in d.get("rows", []):
+        if r.get("metric") == metric and r.get("channel") != channel and is_all(r):
+            others.setdefault(r["channel"], r.get("value"))
+    if others:
+        line = " · ".join(f"{k} {v}" for k, v in sorted(others.items()))
+        print(f"\n  ⚠️ 채널이 다르면 기준이 다릅니다 — {line}")
+        print("     같은 숫자도 채널에 따라 상위·하위가 뒤바뀝니다. 채널을 밝히지 않은 비교는 하지 마세요.")
 
     # 여기서 멈춘다. 평균만 있는 자료로 분위를 말하면 틀린다.
     kinds = {r.get("kind") for r in cand}
