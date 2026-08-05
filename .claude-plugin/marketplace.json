@@ -9,7 +9,7 @@
     {
       "name": "pm-copilot",
       "source": "./",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "displayName": "기획 사수 (PM Copilot)",
       "description": "기획자(PM) 업무를 반자동으로 보조 — 데일리 브리핑·시장 리서치·팀원 현황(나만 보기)·사수 검토·PRD/화면설계·프로젝트관리(간트/로드맵)·QA·고객 VOC·성장코칭까지 스킬 42종. ⚡선제 훅: 세션을 열면 오늘 할 일·미결·브리핑을 먼저 챙김. 💬설치 후 이름·프로덕트·슬랙 Webhook을 바로 물어보는 대화형 설정. 🔌커넥터(설치 시 '연결하는 도구'로 노출): Slack·Notion·Jira·Linear·Asana·monday·ClickUp·Figma·Microsoft 365·Gmail·Google Calendar. Figma는 기존 기획서·디자인 열람/생성·편집까지. 미연결 시 웹 리서치+컨텍스트로 동작.",
       "author": {
