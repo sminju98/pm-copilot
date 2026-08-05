@@ -232,6 +232,12 @@ Codex 는 스킬 목록에 컨텍스트의 **2% 만** 쓴다. 넘으면 descript
 **예산은 전 소스 공유다.** 넘기면 우리 것뿐 아니라 그 런타임의 내장 스킬(`imagegen` 570→30자)까지 함께 뭉갠다. 남의 도구를 망가뜨리는 셈이라, 개수를 지키는 것은 성능 문제이자 예의 문제다.
 
 **Codex 를 쓸 거면 40개 안쪽으로 맞춘다.** Copilot 에는 이 제한이 없어 전부 넣어도 된다.
+**Codex 만 골라 줄이는 수단은 없다.** `skills.config`·`disabled_skill_names`·`skills.roots` 를 전부 시험했지만 TOML 설정이 아니라 앱서버 API 필드였다(codex-cli 0.145.0-alpha.30 실측). 그리고 `~/.agents/skills` 는 Codex·Zed·Antigravity 가 공유하는 **유일한** 경로라 빼면 셋 다 잃는다.
+
+그래서 **범용을 기준으로 전량 내보내고, Codex 를 주로 쓸 때만** 줄인다:
+```bash
+<플러그인이름> port --apply --max 10     # 형제당 10개 = 4형제 합계 40개
+```
 
 ```bash
 <플러그인이름> port --apply --max 20     # 백본 + 많이 참조되는 순으로 20개만
