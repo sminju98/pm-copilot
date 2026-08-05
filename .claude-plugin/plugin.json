@@ -1,6 +1,6 @@
 {
   "name": "pm-copilot",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "기획자(PM)를 위한 사수형 업무 플러그인(스킬 42종·무료 오픈소스). 데일리 브리핑·사수 검토·시장 리서치·PRD/화면설계·IR/유저가이드/제품영상·프로젝트관리(간트·로드맵)·QA·고객 VOC·성장코칭. 작업물마다 선제 검토하고 하루 1~2회 이상신호를 체크인하는 선제 훅, 설치 시 대화형 설정, Slack·Notion·Jira·Figma·Microsoft 365·Google 등 커넥터 11종 연동. 모든 작업은 반자동(사람 검토).",
   "author": {
     "name": "songminju",
