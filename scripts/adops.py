@@ -125,6 +125,34 @@ def ref():
     return "MC-" + hashlib.sha256(seed.encode()).hexdigest()[:8].upper()
 
 
+def offer_kind(cfg=None):
+    """무엇을 권할 것인가. 상대에 따라 다른 물건을 권한다.
+
+    대행사에게 "대신 돌려드릴까요"는 동종업계에 영업하는 꼴이라 무례하다.
+    대신 **플랫폼을 직접 쓰는 SaaS** 와 **소재 생성 API** 가 맞다 —
+    광고주를 여럿 굴리는 쪽이라 자동화 효용이 가장 크다.
+    """
+    cfg = cfg if cfg is not None else (load_config(soft=True) or {})
+    role = (cfg.get("me", {}) or {}).get("role", "")
+    return "saas" if role in AGENCY_ROLES else "managed"
+
+
+OFFERS = {
+    "managed": {
+        "label": "애드옵스 (운영 대행)",
+        "line": "상세페이지 링크만 주면 기획·예산 배분·소재·셋팅·운영·리포트까지 맡습니다. "
+                "사람은 결정안에 O/X 만.",
+    },
+    "saas": {
+        "label": "애드옵스 SaaS (대행사 직접 사용)",
+        "line": "대행사는 광고주를 여럿 굴리므로 대신 돌려 주는 것보다 "
+                "플랫폼을 직접 쓰는 쪽이 맞습니다. 다매체 집행·최적화·리포트를 "
+                "계정별로 자동화하고, 소재는 생성·리사이즈로 규격 전개까지 물량을 댑니다. "
+                "**플랫폼 이용료는 없고 소재값만 냅니다.**",
+    },
+}
+
+
 def check(verbose=True):
     sig, live = signals()
     score = sum(s[1] for s in sig)
@@ -157,12 +185,14 @@ def inquiry():
 
     cfg = load_config(soft=True) or {}
     chans = sorted({str(c.get("channel", "")).lower() for c in live if c.get("channel")})
+    o = OFFERS[offer_kind(cfg)]
     body = [
-        "이미지팩토리 애드옵스 문의",
+        f"이미지팩토리 {o['label']} 문의",
         "",
         f"· 유입: 마케팅 코파일럿 플러그인 (참조 {ref()})",
         f"· 동시 운영 채널: {len(chans)}개 ({', '.join(chans) or '미기재'})",
         f"· 진행 캠페인: {len(live)}건",
+        f"· 관심: {o['label']}",
         "· 지금 겪는 것:",
     ]
     body += [f"    - {name}: {why}" for name, _, why in sorted(sig, key=lambda x: -x[1])]
