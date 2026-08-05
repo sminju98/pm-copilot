@@ -147,6 +147,16 @@ def _sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def _declined_file(plugin):
+    """'이건 내 것이 아니다 — 배포본을 받겠다'고 명시한 파일 목록.
+
+    keep 과 대칭을 이룬다. 이게 없으면 판정 불가 파일 하나 때문에 매번 게이트가 막히고,
+    사용자가 할 수 있는 게 --force 뿐이라 결국 전부 강행하게 된다 — 게이트가 무의미해진다.
+    확정 시점의 지문을 같이 남겨, 그 파일이 나중에 또 바뀌면 다시 묻는다.
+    """
+    return os.path.join(OVERRIDES, ".declined", f"{plugin}.json")
+
+
 def _baseline_file(plugin, version):
     return os.path.join(OVERRIDES, ".baseline", f"{plugin}-{version}.json")
 
@@ -231,6 +241,7 @@ def scan_custom(row):
     over = os.path.join(OVERRIDES, row["plugin"])
     kept = set(_walk(over)) if os.path.isdir(over) else set()
     res["kept"] = sorted(kept)
+    declined = _json(_declined_file(row["plugin"]), {}) or {}
 
     kind, base_src = _pristine_source(row)
     head_dir = os.path.join(clone, sub) if clone else None
@@ -254,6 +265,9 @@ def scan_custom(row):
                 mine = _sha(f.read())
         except Exception:
             continue
+
+        if declined.get(rel) == mine:
+            continue  # 배포본을 받기로 이미 정한 파일. 내용이 또 바뀌면 다시 묻는다
 
         if kind is None:
             # 기준선이 없다. 배포본에 아예 없는 파일만 '추가'로 단정할 수 있다.
@@ -311,17 +325,37 @@ def keep(row, rels):
 
 
 def drop(row, rels):
-    """확정을 취소한다 — 다음 갱신부터 배포본을 따른다."""
+    """배포본을 받기로 정한다 — 확정을 취소하고, 다시 묻지 않도록 기록한다."""
     dst_root = os.path.join(OVERRIDES, row["plugin"])
+    declined = _json(_declined_file(row["plugin"]), {}) or {}
     n = 0
     for rel in rels:
         p = os.path.join(dst_root, rel)
         if os.path.isfile(p):
             os.remove(p)
             n += 1
-    if n:
-        print(f"  {n}개 파일의 확정을 취소했습니다 — 다음 갱신에서 배포본으로 돌아갑니다.")
-    return n
+        # 확정 여부와 무관하게 '배포본을 받겠다'는 결정을 남긴다.
+        # 지문을 함께 저장해, 이후 그 파일이 또 달라지면 다시 묻게 한다.
+        cur = os.path.join(row.get("install_path") or "", rel)
+        if os.path.isfile(cur):
+            try:
+                with open(cur, "rb") as f:
+                    declined[rel] = _sha(f.read())
+            except Exception:
+                pass
+
+    d = _declined_file(row["plugin"])
+    os.makedirs(os.path.dirname(d), exist_ok=True)
+    try:
+        with open(d, "w", encoding="utf-8") as f:
+            json.dump(declined, f, ensure_ascii=False, indent=0, sort_keys=True)
+    except Exception:
+        pass
+
+    print(f"  {len(rels)}개 파일은 배포본을 따릅니다"
+          + (f" (확정 {n}개 취소)" if n else "") + " — 다시 묻지 않습니다.")
+    log_activity("update", f"{row['plugin']} 배포본 채택: {', '.join(rels)}")
+    return len(rels)
 
 
 def reapply(row):
@@ -532,6 +566,16 @@ def install_cron():
     os.chmod(LAUNCHER, 0o755)
 
     line = f"30 9 * * 1 {LAUNCHER} >> {LOG} 2>&1  {CRON_TAG}"
+
+    # macOS 는 launchd 가 정식 경로다. crontab 은 남아 있긴 하지만 전체 디스크 접근
+    # 권한을 요구해, 권한이 없으면 오류도 없이 **멈춘다**(실제로 그렇게 걸렸다).
+    # 그래서 darwin 에서는 crontab 을 아예 건드리지 않는다.
+    if sys.platform == "darwin":
+        return _install_launchd(line)
+    return _install_crontab(line)
+
+
+def _install_crontab(line):
     try:
         cur = subprocess.run(["crontab", "-l"], capture_output=True, text=True, timeout=15)
         existing = cur.stdout if cur.returncode == 0 else ""
@@ -551,7 +595,51 @@ def install_cron():
         return False
 
     print(f"  매주 월요일 09:30 자동 갱신 등록 완료 → 로그 {LOG}")
-    log_activity("update", "주간 자동 갱신 크론 등록")
+    log_activity("update", "주간 자동 갱신 등록(crontab)")
+    return True
+
+
+def _install_launchd(fallback_line):
+    """macOS 사용자 에이전트로 등록한다. 매주 월요일 09:30."""
+    label = "com." + os.path.basename(HOME).lstrip(".") + ".update"
+    plist_dir = os.path.expanduser("~/Library/LaunchAgents")
+    plist = os.path.join(plist_dir, label + ".plist")
+    try:
+        os.makedirs(plist_dir, exist_ok=True)
+        with open(plist, "w", encoding="utf-8") as f:
+            f.write(
+                '<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" '
+                '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n'
+                '<plist version="1.0"><dict>\n'
+                f'  <key>Label</key><string>{label}</string>\n'
+                f'  <key>ProgramArguments</key><array><string>/bin/sh</string>'
+                f'<string>{LAUNCHER}</string></array>\n'
+                '  <key>StartCalendarInterval</key>'
+                '<dict><key>Weekday</key><integer>1</integer>'
+                '<key>Hour</key><integer>9</integer>'
+                '<key>Minute</key><integer>30</integer></dict>\n'
+                f'  <key>StandardOutPath</key><string>{LOG}</string>\n'
+                f'  <key>StandardErrorPath</key><string>{LOG}</string>\n'
+                '  <key>RunAtLoad</key><false/>\n'
+                '</dict></plist>\n'
+            )
+    except Exception as e:
+        print(f"  launchd 등록 파일을 쓰지 못했습니다({e}). 수동 등록: {fallback_line}")
+        return False
+
+    uid = os.getuid()
+    # 이미 올라가 있으면 내렸다가 다시 올린다. 실패해도 plist 는 다음 로그인에 잡힌다.
+    for args in (["launchctl", "bootout", f"gui/{uid}/{label}"],
+                 ["launchctl", "bootstrap", f"gui/{uid}", plist]):
+        try:
+            subprocess.run(args, capture_output=True, text=True, timeout=20)
+        except Exception:
+            pass
+
+    print(f"  매주 월요일 09:30 자동 갱신 등록 완료 (launchd: {label})")
+    print(f"  로그 {LOG} · 해제하려면 launchctl bootout gui/{uid}/{label} 후 plist 삭제")
+    log_activity("update", "주간 자동 갱신 등록(launchd)")
     return True
 
 
@@ -666,7 +754,8 @@ def main():
         if not found:
             print("  설치본을 손댄 흔적이 없습니다 — 그냥 갱신하셔도 됩니다.")
         else:
-            print("  --keep <경로> 로 지킬 것을 고르고, --diff <경로> 로 차이를 볼 수 있습니다.")
+            print("  --keep <경로> 로 지킬 것을 고르고, --drop <경로> 로 배포본을 받겠다고 정합니다.")
+            print("  --diff <경로> 로 차이를 먼저 볼 수 있습니다.")
         return 0
 
     code = report(rows, quiet=a.quiet)
