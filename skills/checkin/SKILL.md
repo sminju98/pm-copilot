@@ -37,7 +37,7 @@ description: 하루 1~2회 스스로 현재 진도를 점검해 "이거 이상�
 
 ## 자동 실행 (핵심)
 - **클라우드 루틴으로 평일 하루 1~2회**(예: 11:00·16:00) 자동 실행 → [[routine]]로 등록한다.
-- 등록 레시피 보기: `python3 "$CLAUDE_PLUGIN_ROOT/scripts/schedule_brief.py" --kind checkin`
+- 등록 레시피 보기: `pm-copilot schedule_brief --kind checkin`
 - 무인 실행 시 연동 읽기는 claude.ai 커넥터로, 결과는 이상 있을 때만 슬랙(나만 보기)으로.
 
 관련: [[daily-brief]] · [[product-review]] · [[metrics-watch]] · [[project]] · [[team-standup]] · [[routine]] · [[method]]

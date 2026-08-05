@@ -11,7 +11,7 @@ description: 기획자용 데일리 브리핑을 한 번에 생성·전송한다
 
 ## 0. 준비 — 설정과 컨텍스트 로드
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/doctor.py"
+pm-copilot doctor
 cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null || echo "(컨텍스트 문서 없음)"
 cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/config.json"
 ```
@@ -42,7 +42,7 @@ cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/config.json"
 ## 3. 미리보기 vs 전송 — 실행 주체 구분
 먼저 이 실행이 **예약(무인)인지 대화형인지** 판별한다. 프롬프트에 "[예약 실행]/사용자 확인 없이"가 있거나 환경변수가 세팅돼 있으면 예약이다:
 ```bash
-python3 -c "import sys; sys.path.insert(0,'$CLAUDE_PLUGIN_ROOT/scripts'); import common; print('예약' if common.is_scheduled() else '대화형')"
+python3 -c "import sys; sys.path.insert(0,'$(pm-copilot --root)/scripts'); import common; print('예약' if common.is_scheduled() else '대화형')"
 ```
 - **대화형(사람이 직접 부름):** 먼저 **개인본 초안을 화면에 보여주고** "이대로 보낼까요? (팀 공유본은 ③ 빼고 나갑니다)" 확인을 받는다. 승인 후 전송. → *반자동: 사람이 검토·수정하고 주고받으며 함께 다듬는다.*
 - **예약 실행:** 승인할 사람이 없으므로 확인을 건너뛰고 바로 저장·전송한다. 설정/컨텍스트가 없으면(예약 환경 제약) 있는 것만으로 만들고, 전송 실패 시 이유를 마무리 보고에 남긴다.
@@ -50,7 +50,7 @@ python3 -c "import sys; sys.path.insert(0,'$CLAUDE_PLUGIN_ROOT/scripts'); import
 ## 4. 저장 & 전송 (연결된 커넥터 우선)
 초안을 로컬에 저장(대화형일 때)한 뒤, **연결된 커넥터로 전송**한다.
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind private --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/_draft_private.md"
+pm-copilot save_brief --kind private --file "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/_draft_private.md"
 ```
 **전달 규약(우선순위):**
 1. **Slack 커넥터가 연결돼 있으면** → 그 커넥터로 게시: 개인본 → `delivery.private.slack_channel`, 팀본 → `delivery.team.slack_channel`(enabled일 때).

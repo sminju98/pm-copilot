@@ -16,14 +16,14 @@ description: 팀엔 안 보이는 PM 전용 비공개 백로그. 아이디어·�
 ## 담기
 사용자가 아이디어/리스크/관찰을 말하면 바로 기록한다:
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log backlog --add "온보딩 이탈 3단계에서 큼 — 진행바 실험 아이디어 (리스크: 개발공수)"
+pm-copilot journal --log backlog --add "온보딩 이탈 3단계에서 큼 — 진행바 실험 아이디어 (리스크: 개발공수)"
 ```
 잘 담으려면 한 줄에 **무엇 + (있으면) 왜/맥락**을 함께. 분류 태그(아이디어/리스크/관찰)를 앞에 붙여도 좋다.
 
 ## 꺼내기 · 정리
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log backlog --list
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log backlog --list --since 14
+pm-copilot journal --log backlog --list
+pm-copilot journal --log backlog --list --since 14
 ```
 - 요청 시 주제별로 묶어 보여주고, **묵힌 항목**(오래된 것)을 리마인드한다.
 - 사용자가 원하면 특정 항목을 `prioritize`(우선순위)나 `write-spec`(기획서)로 넘긴다.

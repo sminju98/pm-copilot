@@ -2,13 +2,20 @@
 
 외부 라이브러리 없이 파이썬 표준 라이브러리만 사용한다(설치 없이 바로 실행).
 """
+import contextlib
 import datetime
 import json
 import os
 import ssl
 import sys
+import time
 import urllib.error
 import urllib.request
+
+try:
+    import fcntl                      # POSIX 전용 — 없으면 잠금 없이 동작한다
+except ImportError:                   # pragma: no cover
+    fcntl = None
 
 # ROOT = 설치된 패키지 폴더(스킬·스크립트·템플릿). 플러그인 업데이트 시 갈아끼워지므로 '읽기 전용' 취급.
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,6 +27,58 @@ CONFIG_PATH = os.path.join(HOME, "config.json")
 EXAMPLE_CONFIG = os.path.join(ROOT, "config.example.json")
 
 
+@contextlib.contextmanager
+def file_lock(path, timeout=10.0):
+    """읽고-고치고-쓰는 구간을 프로세스 사이에서 직렬화한다.
+
+    왜 필요한가 — 원장(JSONL)을 갱신할 때 read_all → 수정 → 전체 재작성을 한다.
+    이 사이에 다른 프로세스가 쓰면 그 쓰기가 통째로 사라진다. 채번도 마찬가지로
+    읽어서 다음 번호를 정하므로, 동시에 두 프로세스가 같은 id 를 붙인다.
+    중복 id 는 조용히 퍼진다 — update() 가 첫 매치에서 멈추므로 이후 갱신이
+    한쪽 레코드에만 가고, 성과 귀속이 어긋나도 아무 오류가 안 난다.
+
+    아침 루틴과 대화 세션이 겹치기만 해도 재현된다. 호스트가 둘이면 더 잦다.
+
+    fcntl 이 없는 환경(윈도우 등)에서는 잠금 없이 통과시킨다 — 기능을 막지는 않는다.
+    """
+    if fcntl is None:
+        yield
+        return
+    lock_path = str(path) + ".lock"
+    try:
+        os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+    except OSError:
+        pass
+    f = None
+    try:
+        f = open(lock_path, "w")
+    except OSError:
+        yield          # 잠금을 못 잡는다고 작업 자체를 막지는 않는다
+        return
+
+    deadline = time.time() + timeout
+    got = False
+    while True:
+        try:
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            got = True
+            break
+        except OSError:
+            if time.time() >= deadline:
+                break  # 기다릴 만큼 기다렸으면 진행한다(교착보다 낫다)
+            time.sleep(0.05)
+    try:
+        yield
+    finally:
+        if got:
+            try:
+                fcntl.flock(f, fcntl.LOCK_UN)
+            except OSError:
+                pass
+        try:
+            f.close()
+        except OSError:
+            pass
 def plugin_option(key):
     """plugin.json 의 userConfig(활성화 시 물어보는 질문) 답변값.
     Claude Code가 CLAUDE_PLUGIN_OPTION_<KEY> 환경변수로 넘겨준다. 버전마다 대소문자

@@ -15,14 +15,14 @@ description: 내린 의사결정을 이유·가정·재검토 시점과 함께 �
 ## 1. 결정 기록하기
 결정이 내려질 때(회의·스펙·우선순위 등에서) 다음을 한 줄로 남긴다: **무엇을 정했나 / 왜(근거) / 핵심 가정 / 성공기준 / 언제 재검토**.
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log decision \
+pm-copilot journal --log decision \
   --add "결제 온보딩 A안 채택 | 왜: 개발공수 절반 | 가정: 전환율 유지 | 성공: 2주 내 완료율 +5%p | 재검토: 8/15"
 ```
 다른 스킬(`meeting`·`write-spec`·`prioritize`)에서 결정이 나오면, 사용자에게 "이 결정 로그에 남길까요?"를 제안한다.
 
 ## 2. 회고 (지난 결정 결과는?)
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log decision --list --since 90
+pm-copilot journal --log decision --list --since 90
 ```
 - **재검토 시점이 된 결정**을 짚어 "그때 가정이 맞았나? 성공기준 달성했나?"를 묻는다(결과는 확인된 지표로만; 없으면 확인 필요).
 - 결정의 **적중/빗나감**을 사실 기반으로 정리한다. 자책이 아니라 학습.

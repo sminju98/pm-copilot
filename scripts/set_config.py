@@ -15,7 +15,7 @@ import shutil
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CONFIG_PATH, EXAMPLE_CONFIG, HOME
+from common import CONFIG_PATH, EXAMPLE_CONFIG, HOME, file_lock
 
 EXAMPLE = EXAMPLE_CONFIG
 
@@ -89,26 +89,42 @@ def main():
         shutil.copy(EXAMPLE, CONFIG_PATH)
         print(f"[config.json 생성됨] {CONFIG_PATH}")
 
-    with open(CONFIG_PATH, encoding="utf-8") as f:
-        cfg = json.load(f)
+    # 읽고-고치고-쓰기다. 잠그지 않으면 설정 두 건을 동시에 바꿀 때
+    # 나중에 저장한 쪽이 앞의 변경을 통째로 지운다(설정은 통짜 재작성이라 부분 병합이 없다).
+    # 게다가 여기서 유실되는 건 승인 모드·예산 상한 같은 게이트 값이다.
+    with file_lock(CONFIG_PATH):
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            cfg = json.load(f)
 
-    args = sys.argv[1:]
-    if not args:
-        print("사용: set_config.py path=value [path=value ...]")
-        return
+        args = sys.argv[1:]
+        if not args:
+            print("사용: set_config.py path=value [path=value ...]")
+            return
 
-    for arg in args:
-        if "=" not in arg:
-            print(f"[무시] '{arg}' — path=value 형식이 필요합니다.")
-            continue
-        path, _, raw = arg.partition("=")
-        path = path.strip()
-        value = parse_value(raw)
-        set_path(cfg, path, value)
-        print(f"  ✓ {path} = {_redact(path, value)}")
+        for arg in args:
+            if "=" not in arg:
+                print(f"[무시] '{arg}' — path=value 형식이 필요합니다.")
+                continue
+            path, _, raw = arg.partition("=")
+            path = path.strip()
+            value = parse_value(raw)
+            set_path(cfg, path, value)
+            print(f"  ✓ {path} = {_redact(path, value)}")
 
-    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-        json.dump(cfg, f, ensure_ascii=False, indent=2)
+        # 임시 파일에 쓰고 원자적으로 갈아끼운다 — 중간에 끊겨도 설정이 반쪽으로 남지 않는다.
+        tmp = f"{CONFIG_PATH}.{os.getpid()}.tmp"
+        try:
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, CONFIG_PATH)
+        finally:
+            if os.path.exists(tmp):
+                try:
+                    os.remove(tmp)
+                except OSError:
+                    pass
     print("[저장 완료]")
 
 

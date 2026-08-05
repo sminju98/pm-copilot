@@ -13,7 +13,7 @@ description: 한 주를 회고하는 주간 브리핑을 만든다. 이번 주 �
 ```bash
 ls "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/briefs/" 2>/dev/null            # 이번 주 데일리 브리핑들
 cat "${PM_COPILOT_HOME:-$HOME/.pm-copilot}/data/context.md" 2>/dev/null        # 목표·로드맵
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log decision --list --since 7   # 이번 주 결정
+pm-copilot journal --log decision --list --since 7   # 이번 주 결정
 ```
 커넥터(노션/Jira)가 있으면 이번 주 완료/이동 티켓도 읽는다. 없으면 위 로컬 자료로.
 
@@ -29,7 +29,7 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/journal.py" --log decision --list --since 7
 - 기본 **개인본(private)**. 팀 공유가 필요하면 민감내용(팀원 개별 평가 등) 빼고 team으로.
 ```bash
 # 연결된 Slack 커넥터로 delivery.private.slack_channel 에 게시(우선). 폴백:
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/post_slack.py" --to private --title "주간 회고: <기간>" --file <초안> --dry-run
+pm-copilot post_slack --to private --title "주간 회고: <기간>" --file <초안> --dry-run
 ```
 - 대화형이면 초안 확인 후 전송, 예약(금요일)이면 바로 전송(`common.is_scheduled()`).
 

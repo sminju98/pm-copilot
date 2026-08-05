@@ -13,7 +13,7 @@ description: 프로젝트 일정을 WBS·간트 차트로 그리고, 프로젝�
 근거(실제 태스크·활동)로만 그린다. 없으면 지어내지 말고 "확인 필요". 반자동(초안→사람 검토). 일정 판단엔 "왜"를 한 줄.
 
 ## 1. 현황 긁어오기 (갱신 근거)
-- 태스크·마감·의존·완료: [[project]] — `python3 "$CLAUDE_PLUGIN_ROOT/scripts/project.py" --list` / `--status`
+- 태스크·마감·의존·완료: [[project]] — `pm-copilot project --list` / `--status`
 - **팀원 한 일(진행률 추적)**: [[team-standup]] 또는 커넥터(Jira/Slack/Notion). 팀원이 실제로 끝낸 것을 보고 진행률·지연을 갱신한다.
 - 단계·마일스톤: [[roadmap]] · [[sprint-plan]].
 

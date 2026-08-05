@@ -1,0 +1,79 @@
+#!/bin/sh
+# pm-copilot — 스크립트 진입점 하나.
+#
+# 왜 이게 필요한가
+# 스킬 본문은 지금까지 `python3 "$CLAUDE_PLUGIN_ROOT/scripts/doctor.py"` 로 스크립트를
+# 불렀다. 그런데 **CLAUDE_PLUGIN_ROOT 는 Bash 도구 세션에 안 내려온다.** 훅과 커맨드
+# 정의에서만 치환되고, 모델이 실제로 명령을 실행하는 셸에서는 빈 문자열이다.
+# 그래서 그 명령줄은 `/scripts/doctor.py` 로 풀려 전건 실패한다 — Claude Code 안에서도.
+#
+# 이 파일은 자기 위치로 플러그인 뿌리를 찾는다. 환경변수에 기대지 않으므로
+#   · Claude Code — bin/ 이 자동으로 PATH 에 들어간다. 그냥 `pm-copilot doctor`.
+#   · 그 밖의 에이전트·터미널 — 이 파일을 직접 부르거나 bin/ 을 PATH 에 넣으면 된다.
+# 양쪽에서 같은 명령이 돈다. 이식성은 덤이고, 먼저 버그가 고쳐진다.
+#
+#   pm-copilot doctor
+#   pm-copilot library stats
+#   pm-copilot econ breakeven --margin 0.3
+#   pm-copilot --root            # 플러그인 뿌리 경로만 출력
+#   pm-copilot --list            # 실행 가능한 스크립트 목록
+
+set -eu
+
+# 심링크로 걸려 있어도 실제 위치를 찾아간다.
+target=$0
+while [ -L "$target" ]; do
+    link=$(readlink "$target")
+    case $link in
+        /*) target=$link ;;
+        *)  target=$(dirname "$target")/$link ;;
+    esac
+done
+ROOT=$(cd "$(dirname "$target")/.." && pwd)
+SCRIPTS="$ROOT/scripts"
+
+PY=${PYTHON:-}
+if [ -z "$PY" ]; then
+    if command -v python3 >/dev/null 2>&1; then PY=python3
+    elif command -v python >/dev/null 2>&1; then PY=python
+    else
+        echo "python3 을 찾지 못했습니다. PYTHON 환경변수로 지정하세요." >&2
+        exit 127
+    fi
+fi
+
+usage() {
+    echo "사용: pm-copilot <스크립트> [인자...]"
+    echo "      pm-copilot --list      실행 가능한 스크립트"
+    echo "      pm-copilot --root      플러그인 뿌리 경로"
+}
+
+list_scripts() {
+    for f in "$SCRIPTS"/*.py; do
+        [ -f "$f" ] || continue
+        name=$(basename "$f" .py)
+        case $name in hook_*|common) continue ;; esac   # 훅·라이브러리는 직접 부를 것이 아니다
+        echo "  $name"
+    done
+}
+
+[ $# -eq 0 ] && { usage; exit 2; }
+
+case $1 in
+    --root)  echo "$ROOT"; exit 0 ;;
+    --list)  echo "실행 가능한 스크립트:"; list_scripts; exit 0 ;;
+    -h|--help) usage; echo; echo "실행 가능한 스크립트:"; list_scripts; exit 0 ;;
+esac
+
+cmd=$1
+shift
+script="$SCRIPTS/$cmd.py"
+
+if [ ! -f "$script" ]; then
+    echo "그런 스크립트가 없습니다: $cmd" >&2
+    echo >&2
+    list_scripts >&2
+    exit 2
+fi
+
+exec "$PY" "$script" "$@"

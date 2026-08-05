@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/proactive.py\"",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/pm-copilot\" proactive",
             "timeout": 15
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/hook_prompt.py\"",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/pm-copilot\" hook_prompt",
             "timeout": 10
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/hook_posttool.py\"",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/pm-copilot\" hook_posttool",
             "timeout": 10
           }
         ]
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/hook_sessionend.py\"",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/pm-copilot\" hook_sessionend",
             "timeout": 15
           }
         ]

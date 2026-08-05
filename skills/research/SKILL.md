@@ -26,7 +26,7 @@ description: 특정 주제·시장·기술·경쟁 상황을 웹(뉴스+블로�
 2. **더 팔 지점** — 아직 얕은 곳, 상충되는 정보, 다음에 확인할 질문.
 3. **한계** — 못 찾은 것/미확인은 솔직히 **"확인 필요"**로 남긴다.
 
-필요하면 저장(개인 리서치 로그): `python3 "$CLAUDE_PLUGIN_ROOT/scripts/save_brief.py" --kind private --file <초안.md>`. 팀 공유는 [[daily-brief]]/`post_slack.py`로.
+필요하면 저장(개인 리서치 로그): `pm-copilot save_brief --kind private --file <초안.md>`. 팀 공유는 [[daily-brief]]/`post_slack.py`로.
 
 ## 원칙
 - **환각 절대 금지.** 없는 사실·통계·인용은 만들지 않는다. 근거 못 찾으면 지어내지 말고 **"확인 필요"**.

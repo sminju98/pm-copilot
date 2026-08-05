@@ -20,9 +20,9 @@ description: 개인 업무일지(🔒 나만 보기)를 자동으로 쓰고 갱�
 
 ## 1. 오늘 할 일 / 한 일 (하루 몇 차례 갱신)
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/worklog.py" --todo "이탈 퍼널 계측 스펙 마무리"
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/worklog.py" --done "경쟁사 리서치 3건 정리"
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/worklog.py" --show          # 오늘
+pm-copilot worklog --todo "이탈 퍼널 계측 스펙 마무리"
+pm-copilot worklog --done "경쟁사 리서치 3건 정리"
+pm-copilot worklog --show          # 오늘
 ```
 - 세션 시작(프로액티브 훅)·요청 시·정기적으로 소스를 훑어 **한 일은 자동 추가**, **빠진 할 일은 제안**한다.
 - 각 '한 일'은 사실 기반(근거: 티켓/문서/대화). 추측 금지, 모르면 확인.
@@ -36,8 +36,8 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/worklog.py" --show          # 오늘
 
 ## 3. 금주 / 월간 (재활용 — 쌓아두는 기록 아님)
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/worklog.py" --show week    # 최근 7일
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/worklog.py" --show month   # 이번 달
+pm-copilot worklog --show week    # 최근 7일
+pm-copilot worklog --show month   # 이번 달
 ```
 일일 기록을 모아 주간/월간 회고를 만든다 → [[weekly-review]]와 연결. **작업물은 다음 일에 다시 쓴다:**
 - 반복 등장한 할 일 → [[prioritize]] 로 우선순위화

@@ -16,13 +16,13 @@ description: pm-copilot 작업(데일리 브리핑·주간회고·지표 감시�
 ## 2. 등록 (두 경로)
 - **A. `/schedule`(대화형):** "평일 09시에 pm-copilot 데일리 브리핑 실행" → 루틴 생성. (가능하면 이 세션의 스케줄 기능으로 대신 등록 제안)
 - **B. claude.ai/code/routines(웹):** New routine → 저장소 `github.com/sminju98/pm-copilot` → 프롬프트 → 스케줄 → 커넥터 → 생성.
-- 등록용 **프롬프트·크론식·환경변수 레시피**: `python3 "$CLAUDE_PLUGIN_ROOT/scripts/schedule_brief.py"`
+- 등록용 **프롬프트·크론식·환경변수 레시피**: `pm-copilot schedule_brief`
 
 ## 3. 무인 실행 전제 (정직하게 안내)
 - 클라우드는 **로컬 config·웹훅을 못 본다** → 루틴 '환경변수/시크릿'에: `PM_COPILOT_SCHEDULED=1`, `PM_COPILOT_SLACK_PRIVATE`(+ 팀 시 `PM_COPILOT_SLACK_TEAM`), `PM_COPILOT_CONTEXT`(또는 노션 커넥터).
 - 읽기(메일·노션·지라)는 **claude.ai 계정 커넥터**로. 웹 리서치가 필요하면 루틴 **네트워크 접근**을 켠다.
 - **마지막 '생성' 클릭은 사람이** — 이 세션에선 대신 못 누른다. **첫 실행 후 실제 슬랙 도착을 꼭 확인.**
-- 등록을 마치면 `python3 "$CLAUDE_PLUGIN_ROOT/scripts/set_config.py" brief.routine_enabled=true`.
+- 등록을 마치면 `pm-copilot set_config brief.routine_enabled=true`.
 
 ## 4. 관리
 목적별로 루틴을 하나씩(브리핑·회고·지표·VOC). 안 쓰는 건 정리한다. 여러 개여도 각자 요일/시각·채널만 다르게.

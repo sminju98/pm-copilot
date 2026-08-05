@@ -14,7 +14,7 @@ Claude Code는 **공식 마켓플레이스만** 자동 갱신을 기본으로 �
 ## 0. 30초 점검 — 무엇이 뒤처졌나
 
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py"
+pm-copilot update_check
 ```
 
 뒤처짐은 **세 종류이고 처방이 다르다.** 뭉뚱그려 "업데이트하세요"라고 하면 못 고친다.
@@ -32,7 +32,7 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py"
 플러그인은 **버전마다 새 디렉터리에 설치된다**(`.../1.3.0/` → `.../1.4.0/`). 그래서 설치본 안의 스킬을 고쳐 놨다면, 갱신하는 순간 그 파일은 새 디렉터리에 없다 — 경고도 없이 원상복구된 것처럼 보인다. **갱신 전에 반드시 확인한다.**
 
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --custom
+pm-copilot update_check --custom
 ```
 
 네 갈래로 나온다. 갈래마다 권해야 할 답이 다르다:
@@ -46,17 +46,17 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --custom
 
 차이를 보여줄 때:
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --plugin <이름> --diff <경로>
+pm-copilot update_check --plugin <이름> --diff <경로>
 ```
 
 ## 2. 취사선택 — 한 번 고르면 끝난다
 
 ```bash
 # 내 것으로 확정 (이후 모든 갱신에 자동 재적용)
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --plugin <이름> --keep skills/ads/SKILL.md
+pm-copilot update_check --plugin <이름> --keep skills/ads/SKILL.md
 
 # 확정 취소 (다음 갱신부터 배포본을 따름)
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --plugin <이름> --drop skills/ads/SKILL.md
+pm-copilot update_check --plugin <이름> --drop skills/ads/SKILL.md
 ```
 
 확정한 파일은 `~/.pm-copilot/overrides/` 에 보관되고, **갱신할 때마다 자동으로 다시 얹힌다.** 매번 다시 고를 필요가 없다.
@@ -67,7 +67,7 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --plugin <이름> --drop s
 ## 3. 갱신 실행
 
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --apply
+pm-copilot update_check --apply
 ```
 
 - 아직 고르지 않은 수정본이 있으면 **멈춘다**(fail-closed). 목록을 보여주고 1~2절로 돌아간다.
@@ -87,7 +87,7 @@ python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --apply
 
 ### ② 주 1회 크론 (①이 안 되거나 취사선택까지 지키고 싶을 때)
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/update_check.py" --install-cron
+pm-copilot update_check --install-cron
 ```
 매주 월요일 09:30에 점검·갱신하고 `~/.pm-copilot/data/_activity/update.log`에 남긴다. **①과 달리 내 수정본을 지켜 준다** — overrides를 자동 재적용하기 때문이다.
 
