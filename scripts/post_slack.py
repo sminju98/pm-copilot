@@ -20,7 +20,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import DATA_DIR, http_request, load_config, looks_private, env_webhook, ENV_WEBHOOK
+from common import DATA_DIR, ENV_WEBHOOK, env_webhook, http_request, load_config, looks_private, routine_guard
 
 
 def to_mrkdwn(md):
@@ -56,6 +56,7 @@ def _read_body(args):
 
 
 def main():
+    routine_guard()   # 예약인데 설정이 덜 됐으면 조용히 끝낸다(오류 아님)
     ap = argparse.ArgumentParser(description="슬랙 Incoming Webhook 전송")
     ap.add_argument("--to", choices=["team", "private"], required=True)
     ap.add_argument("--text", help="보낼 본문 문자열")

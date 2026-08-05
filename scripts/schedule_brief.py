@@ -10,7 +10,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import load_config
+from common import load_config, routine_ready
 
 DOW = {"0": "일", "1": "월", "2": "화", "3": "수", "4": "목", "5": "금", "6": "토", "7": "일"}
 
@@ -76,6 +76,25 @@ def main():
     r = RECIPES[args.kind]
 
     cfg = load_config(soft=True)
+
+    ok, why = routine_ready(cfg)
+
+    if not ok:
+
+        # 준비가 안 된 채로 루틴을 걸면 예약 시각마다 빈 브리핑이 날아온다.
+
+        # 사용자는 그걸 보고 루틴을 끄고 다시 안 켠다 — 걸지 않는 게 맞다.
+
+        print("⏸  아직 루틴을 걸 때가 아닙니다. 먼저 채워야 할 것:")
+
+        for w in why:
+
+            print(f"   · {w}")
+
+        print("\n   설정을 마친 뒤 다시 부르면 그때 예약 안내를 냅니다.")
+
+        return 2
+
     cron = r["cron"]
     if args.kind == "brief":
         cron = cfg.get("brief", {}).get("schedule", cron)
@@ -107,4 +126,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main() or 0)

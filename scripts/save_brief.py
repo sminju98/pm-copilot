@@ -11,10 +11,11 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import DATA_DIR, save_brief
+from common import DATA_DIR, routine_guard, save_brief
 
 
 def main():
+    routine_guard()   # 예약인데 설정이 덜 됐으면 조용히 끝낸다(오류 아님)
     ap = argparse.ArgumentParser(description="브리핑 로컬 저장")
     ap.add_argument("--kind", choices=["private", "team"], default="private")
     ap.add_argument("--file")

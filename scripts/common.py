@@ -137,6 +137,44 @@ def context_path(cfg=None):
     return rel if os.path.isabs(rel) else os.path.join(HOME, rel)
 
 
+def routine_ready(cfg=None):
+    """무인 루틴을 돌려도 되는 상태인가. (가능여부, 못 하는 이유들) 로 답한다.
+
+    설정이 덜 된 상태에서 루틴을 걸면 매일 빈 브리핑이나 "설정 없음" 오류가
+    예약 시각마다 날아온다. 사용자는 그걸 보고 루틴을 꺼 버리고, 다시는 안 켠다.
+    **아무것도 안 보내는 게 빈 걸 보내는 것보다 낫다.**
+
+    그래서 두 곳에서 쓴다:
+      · 등록 전 — 준비가 안 됐으면 루틴을 걸지 않고 무엇이 빠졌는지 알린다.
+      · 실행 중 — 예약으로 깨어났는데 준비가 안 됐으면 조용히 종료한다(오류 아님).
+    """
+    why = []
+    if cfg is None:
+        if not os.path.exists(CONFIG_PATH):
+            return False, ["설정 파일이 없습니다 — 먼저 설정을 마쳐야 합니다"]
+        cfg = load_config(soft=True) or {}
+    if not cfg:
+        return False, ["설정이 비어 있습니다"]
+    if cfg.get("setup", {}).get("completed") is not True:
+        why.append("설정이 끝나지 않았습니다(setup.completed)")
+    if not (cfg.get("brand", {}).get("name") or cfg.get("company", {}).get("name")):
+        why.append("브랜드·회사 이름이 없습니다")
+    return (not why), why
+
+
+def routine_guard():
+    """예약(무인) 실행인데 준비가 안 됐으면 **조용히** 끝낸다.
+
+    스크립트 맨 앞에서 부른다. 오류를 내지 않는 것이 핵심이다 — 예약 로그에
+    빨간 줄이 쌓이면 사용자는 원인을 못 찾고 루틴 자체를 의심하게 된다.
+    """
+    if not is_scheduled():
+        return True
+    ok, _ = routine_ready()
+    if not ok:
+        sys.exit(0)
+    return True
+
 def user_language(cfg=None):
     """사용자 언어 코드. 'auto' 면 클로드가 대화 언어를 보고 정한다.
 
