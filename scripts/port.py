@@ -49,9 +49,16 @@ AGENTS_HOME = os.environ.get("AGENTS_HOME", "").strip() or os.path.expanduser("~
 SKILLS_OUT = os.path.join(AGENTS_HOME, "skills")
 
 # 훅 — 공통 경로가 없어 타깃별로 쓴다. 가리키는 디스패처는 하나다.
+# 이벤트 이름이 타깃마다 조금 다르다. 세션 종료가 Copilot 은 Stop, Codex 는 SessionEnd.
 HOOK_TARGETS = {
-    "copilot": os.path.expanduser("~/.copilot/hooks"),
-    "cursor":  os.path.expanduser("~/.cursor"),
+    "copilot": {"dir": os.path.expanduser("~/.copilot/hooks"), "file": "{plugin}.json",
+                "end": "Stop"},
+    "cursor":  {"dir": os.path.expanduser("~/.cursor"), "file": "hooks.json",
+                "end": "Stop"},
+    # config.toml 에 [hooks] 를 인라인으로 넣으면 둘 다 로드되며 경고가 난다.
+    # 게다가 그 파일은 ChatGPT 앱이 쓰는 살아있는 설정이라 건드리지 않는다.
+    "codex":   {"dir": os.path.expanduser("~/.codex"), "file": "hooks.json",
+                "end": "SessionEnd"},
 }
 
 SKIP = {"__pycache__", ".DS_Store", ".git"}
@@ -99,6 +106,29 @@ def _rewrite_body(body, name_map):
     body = re.sub(r"\[\[([a-z0-9-]+)\]\]",
                   lambda m: f"[[{name_map.get(m.group(1), m.group(1))}]]", body)
     return body
+
+
+# 어떤 런타임(특히 Codex)은 스킬 목록에 컨텍스트의 2% 만 쓴다. 넘으면 description 이
+# 137자쯤으로 잘리는데, 자동 발동이 description 으로 이뤄지므로 **스킬이 안 불린다.**
+# 그래서 개수를 줄일 수 있게 한다. 무엇을 남길지는 아래 순서로 정한다.
+BACKBONE = ["method", "setup", "help", "role", "update", "chair", "handoff", "routine", "today"]
+
+
+def _rank(items):
+    """남길 순서. 백본이 먼저, 그다음 남들이 많이 참조하는 것 순.
+
+    많이 참조되는 스킬을 빼면 남은 스킬들의 링크가 통째로 끊긴다 —
+    개수를 줄일 때 가장 먼저 지켜야 할 것이 연결이다.
+    """
+    ref = {it["name"]: 0 for it in items}
+    for it in items:
+        for m in re.finditer(r"\[\[([a-z0-9-]+)\]\]", it["text"]):
+            if m.group(1) in ref:
+                ref[m.group(1)] += 1
+    def key(it):
+        b = BACKBONE.index(it["name"]) if it["name"] in BACKBONE else len(BACKBONE)
+        return (b, -ref[it["name"]], it["name"])
+    return sorted(items, key=key)
 
 
 def plan():
@@ -169,28 +199,48 @@ def write_hooks(target="copilot"):
     ⚠️ Copilot 은 matcher 값을 **무시하고 모든 툴에서 훅을 돌린다.**
     그래서 PostToolUse 훅은 자기가 입력을 보고 걸러야 한다
     (hook_posttool.py 는 이미 그렇게 돼 있다 — 파일 경로가 없으면 조용히 끝난다).
+
+    세션 종료 이벤트 이름이 다르다 — Copilot·Cursor 는 Stop, Codex 는 SessionEnd.
     """
     p = plugin_name()
     disp = os.path.join(ROOT, "bin", p)
-    cfg = {"hooks": {}}
-    for event, script in [("SessionStart", "proactive"),
-                          ("UserPromptSubmit", "hook_prompt"),
-                          ("PostToolUse", "hook_posttool"),
-                          ("Stop", "hook_sessionend")]:
-        cfg["hooks"][event] = [{"hooks": [{"type": "command",
-                                           "command": f'"{disp}" {script}',
-                                           "timeout": 15}]}]
-
     written = []
-    targets = HOOK_TARGETS.keys() if target == "all" else [target]
-    for t in targets:
-        d = HOOK_TARGETS.get(t)
-        if not d:
+    names = HOOK_TARGETS.keys() if target == "all" else [target]
+
+    for t in names:
+        spec = HOOK_TARGETS.get(t)
+        if not spec:
             continue
-        os.makedirs(d, exist_ok=True)
-        path = os.path.join(d, f"{p}.json" if t == "copilot" else "hooks.json")
+        cfg = {"hooks": {}}
+        for event, script in [("SessionStart", "proactive"),
+                              ("UserPromptSubmit", "hook_prompt"),
+                              ("PostToolUse", "hook_posttool"),
+                              (spec["end"], "hook_sessionend")]:
+            cfg["hooks"][event] = [{"hooks": [{"type": "command",
+                                               "command": f'"{disp}" {script}',
+                                               "timeout": 15}]}]
+
+        os.makedirs(spec["dir"], exist_ok=True)
+        path = os.path.join(spec["dir"], spec["file"].format(plugin=p))
+
+        # 이미 남의 훅이 들어 있는 파일이면 우리 것만 병합한다. 통째로 덮지 않는다.
+        merged = cfg
+        if os.path.isfile(path):
+            try:
+                cur = json.load(open(path, encoding="utf-8"))
+                if isinstance(cur.get("hooks"), dict):
+                    others = {k: [e for e in v
+                                  if disp not in json.dumps(e, ensure_ascii=False)]
+                              for k, v in cur["hooks"].items()}
+                    for k, v in cfg["hooks"].items():
+                        others.setdefault(k, [])
+                        others[k] = [e for e in others[k] if e] + v
+                    merged = {**cur, "hooks": {k: v for k, v in others.items() if v}}
+            except Exception:
+                pass
+
         with open(path, "w", encoding="utf-8") as f:
-            json.dump(cfg, f, ensure_ascii=False, indent=2)
+            json.dump(merged, f, ensure_ascii=False, indent=2)
         written.append(path)
     return written
 
@@ -203,15 +253,23 @@ def remove():
             if d.startswith(pre + "-"):
                 shutil.rmtree(os.path.join(SKILLS_OUT, d), ignore_errors=True)
                 n += 1
-    for d in HOOK_TARGETS.values():
-        for fn in (f"{plugin_name()}.json", "hooks.json"):
-            h = os.path.join(d, fn)
-            if os.path.isfile(h):
-                try:
-                    if json.load(open(h, encoding="utf-8")).get("hooks", {}).get("SessionStart"):
-                        os.remove(h)
-                except Exception:
-                    pass
+    disp = os.path.join(ROOT, "bin", plugin_name())
+    for spec in HOOK_TARGETS.values():
+        h = os.path.join(spec["dir"], spec["file"].format(plugin=plugin_name()))
+        if not os.path.isfile(h):
+            continue
+        try:
+            cur = json.load(open(h, encoding="utf-8"))
+            hooks = {k: [e for e in v if disp not in json.dumps(e, ensure_ascii=False)]
+                     for k, v in (cur.get("hooks") or {}).items()}
+            hooks = {k: v for k, v in hooks.items() if v}
+            if hooks or len(cur) > 1:
+                json.dump({**cur, "hooks": hooks}, open(h, "w", encoding="utf-8"),
+                          ensure_ascii=False, indent=2)
+            else:
+                os.remove(h)     # 우리 것만 있던 파일이면 지운다
+        except Exception:
+            pass
     return n
 
 
@@ -222,11 +280,10 @@ def status():
     print(f"플러그인: {plugin_name()} (접두어 {pre}-)")
     print(f"내보낸 곳: {SKILLS_OUT}")
     print(f"  내 스킬 {len(mine)}개 / 그 경로 전체 {len(out)}개")
-    for t, d in HOOK_TARGETS.items():
-        for fn in (f"{plugin_name()}.json", "hooks.json"):
-            h = os.path.join(d, fn)
-            if os.path.isfile(h):
-                print(f"  훅({t}): {h}")
+    for t, spec in HOOK_TARGETS.items():
+        h = os.path.join(spec["dir"], spec["file"].format(plugin=plugin_name()))
+        if os.path.isfile(h):
+            print(f"  훅({t}): {h}")
     others = sorted({d.split("-")[0] for d in out if not d.startswith(pre + "-")})
     if others:
         print(f"  같은 곳의 다른 코파일럿: {', '.join(others)}")
@@ -234,11 +291,13 @@ def status():
 
 def main():
     ap = argparse.ArgumentParser(description="다른 에이전트로 내보내기 (정본은 안 고친다)")
-    ap.add_argument("--hooks", choices=["copilot", "cursor", "all", "none"], default="copilot",
+    ap.add_argument("--hooks", choices=["copilot", "cursor", "codex", "all", "none"], default="all",
                     help="훅을 어느 에이전트용으로 쓸지 (스킬은 항상 공통 경로)")
     ap.add_argument("--apply", action="store_true", help="실제로 내보낸다")
     ap.add_argument("--remove", action="store_true", help="내보낸 것을 걷어낸다")
     ap.add_argument("--status", action="store_true", help="지금 무엇이 나가 있나")
+    ap.add_argument("--max", type=int, default=0, metavar="N",
+                    help="스킬을 N개로 줄여 내보낸다(카탈로그 예산이 있는 런타임용). 0=전부")
     a = ap.parse_args()
 
     if a.status:
@@ -257,7 +316,17 @@ def main():
             print(f"   · {w}")
         return 2
 
+    dropped = []
+    if a.max and len(items) > a.max:
+        ranked = _rank(items)
+        items, dropped = ranked[:a.max], ranked[a.max:]
+
     print(f"스킬 {len(items)}개 → {SKILLS_OUT}  (공통 경로 — Copilot·Codex·Cursor·Zed·Antigravity 가 함께 읽음)")
+    if dropped:
+        # 조용히 자르지 않는다. 무엇이 빠졌는지 반드시 알린다.
+        print(f"  ⚠️  {len(dropped)}개는 뺐습니다(--max {a.max}): "
+              + ", ".join(d["name"] for d in dropped[:12])
+              + (" …" if len(dropped) > 12 else ""))
     print(f"이름: {items[0]['name']} → {items[0]['new']} (…이하 동일 규칙)")
     if not a.apply:
         print("\n  --apply 를 붙이면 실제로 내보냅니다. 정본(skills/)은 건드리지 않습니다.")
