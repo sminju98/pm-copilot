@@ -206,7 +206,11 @@ def cmd_show():
             v, vu = d["views"].get(day, (0, 0))
             print(f"     {day}  클론 {c:>4}/순{cu:<4} 조회 {v:>4}/순{vu:<4}")
         print()
-    print("  ※ 사람 수를 보려면 '조회'를 보세요 — 클론은 신규 공개 레포를 훑는 크롤러가 섞입니다.")
+    print("  ※ 클론/조회 비율을 봇 신호로 읽지 마세요. 이 플러그인들은 Claude Code 의")
+    print("     `/plugin marketplace add` 로 설치되는데, 그 명령이 git clone 을 실행합니다.")
+    print("     설치자는 GitHub 페이지를 안 거치므로 **클론만 오르고 조회는 안 오릅니다.**")
+    print("     CLI 설치로 홍보한 레포(마케팅·세일즈)는 클론을 설치 수로 읽는 편이 맞습니다.")
+    print("     반대로 조회가 함께 높으면 웹에서 소개된 경로가 따로 있다는 뜻입니다.")
 
 
 def main():
