@@ -167,8 +167,15 @@ def routine_guard():
 
     스크립트 맨 앞에서 부른다. 오류를 내지 않는 것이 핵심이다 — 예약 로그에
     빨간 줄이 쌓이면 사용자는 원인을 못 찾고 루틴 자체를 의심하게 된다.
+
+    클라우드 예약은 로컬 config.json 없이 환경변수(PM_COPILOT_SLACK_*)만으로
+    동작하는 게 README에 문서화된 정식 경로다 — 그 환경변수가 하나라도 있으면
+    로컬 config.json 유무와 무관하게 준비된 것으로 본다. 그 값도 없을 때만
+    routine_ready() 로 로컬 설정 완료 여부를 확인한다.
     """
     if not is_scheduled():
+        return True
+    if env_webhook("private") or env_webhook("team"):
         return True
     ok, _ = routine_ready()
     if not ok:
